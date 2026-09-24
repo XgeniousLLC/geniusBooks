@@ -117,6 +117,7 @@ const NAV_GROUPS: NavGroup[] = [
             },
             { label: 'Invoice Settings', href: '/portal/settings/invoices', roles: ['owner'], match: (p) => p.startsWith('/portal/settings/invoices') },
             { label: 'Tax Settings', href: '/portal/settings/tax', roles: ['owner'], match: (p) => p.startsWith('/portal/settings/tax') },
+            { label: 'Online Payments', href: '/portal/settings/payments', roles: ['owner'], match: (p) => p.startsWith('/portal/settings/payments') },
             {
                 label: 'Email Settings',
                 href: '/portal/settings/email',

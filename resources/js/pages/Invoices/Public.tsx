@@ -21,9 +21,11 @@ interface Props {
         invoice_footer: string | null;
     };
     pdfUrl: string;
+    canPay: boolean;
+    payUrl: string | null;
 }
 
-export default function PublicInvoice({ invoice, company, pdfUrl }: Props) {
+export default function PublicInvoice({ invoice, company, pdfUrl, canPay, payUrl }: Props) {
     return (
         <div className="min-h-screen bg-slate-100 py-10 px-4">
             <div className="max-w-3xl mx-auto">
@@ -32,12 +34,22 @@ export default function PublicInvoice({ invoice, company, pdfUrl }: Props) {
                         <h1 className="text-xl font-bold text-slate-900">{company.name}</h1>
                         {company.email && <p className="text-sm text-slate-500">{company.email}</p>}
                     </div>
-                    <a
-                        href={pdfUrl}
-                        className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
-                    >
-                        Download PDF
-                    </a>
+                    <div className="flex items-center gap-2">
+                        {canPay && payUrl && (
+                            <a
+                                href={payUrl}
+                                className="rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
+                            >
+                                Pay {invoice.formatted.balance}
+                            </a>
+                        )}
+                        <a
+                            href={pdfUrl}
+                            className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                        >
+                            Download PDF
+                        </a>
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">

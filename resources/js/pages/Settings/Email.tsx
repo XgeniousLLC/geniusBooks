@@ -15,6 +15,7 @@ interface Settings {
     notify_payment_received: boolean;
     notify_invoice_due: boolean;
     notify_invoice_overdue: boolean;
+    sms_notifications_enabled: boolean;
 }
 
 interface Template {
@@ -37,9 +38,10 @@ interface Props {
     templates: Template[];
     logs: Log[];
     variables: string[];
+    smsDriver: string;
 }
 
-export default function EmailSettings({ settings, templates, logs, variables }: Props) {
+export default function EmailSettings({ settings, templates, logs, variables, smsDriver }: Props) {
     const settingsForm = useForm({
         email_from_name: settings.email_from_name ?? '',
         email_reply_to: settings.email_reply_to ?? '',
@@ -52,9 +54,11 @@ export default function EmailSettings({ settings, templates, logs, variables }: 
         notify_payment_received: settings.notify_payment_received,
         notify_invoice_due: settings.notify_invoice_due,
         notify_invoice_overdue: settings.notify_invoice_overdue,
+        sms_notifications_enabled: settings.sms_notifications_enabled,
     });
 
     const testForm = useForm({ email: '' });
+    const smsForm = useForm({ phone: '' });
 
     const saveSettings = (e: FormEvent) => {
         e.preventDefault();
@@ -64,6 +68,11 @@ export default function EmailSettings({ settings, templates, logs, variables }: 
     const sendTest = (e: FormEvent) => {
         e.preventDefault();
         testForm.post('/portal/settings/email/test', { preserveScroll: true, onSuccess: () => testForm.reset() });
+    };
+
+    const sendTestSms = (e: FormEvent) => {
+        e.preventDefault();
+        smsForm.post('/portal/settings/email/sms-test', { preserveScroll: true, onSuccess: () => smsForm.reset() });
     };
 
     return (
@@ -120,6 +129,7 @@ export default function EmailSettings({ settings, templates, logs, variables }: 
                                 ['notify_payment_received', 'Payment received'],
                                 ['notify_invoice_due', 'Invoice due soon'],
                                 ['notify_invoice_overdue', 'Invoice overdue'],
+                                ['sms_notifications_enabled', 'Also send SMS (customers with a phone number)'],
                             ] as const).map(([key, label]) => (
                                 <label key={key} className="flex items-center gap-3 text-sm text-slate-700">
                                     <input
@@ -164,6 +174,25 @@ export default function EmailSettings({ settings, templates, logs, variables }: 
                             {testForm.errors.email && <p className="text-xs text-red-500">{testForm.errors.email}</p>}
                             <button type="submit" disabled={testForm.processing} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
                                 {testForm.processing ? 'Sending...' : 'Send test email'}
+                            </button>
+                        </form>
+                    </div>
+
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                        <h2 className="text-sm font-semibold text-slate-800 mb-1">Send a test SMS</h2>
+                        <p className="text-xs text-slate-500 mb-4">Gateway driver: <span className="font-mono">{smsDriver}</span></p>
+                        <form onSubmit={sendTestSms} className="space-y-3">
+                            <input
+                                type="tel"
+                                required
+                                placeholder="+1234567890"
+                                className={inputClass}
+                                value={smsForm.data.phone}
+                                onChange={(e) => smsForm.setData('phone', e.target.value)}
+                            />
+                            {smsForm.errors.phone && <p className="text-xs text-red-500">{smsForm.errors.phone}</p>}
+                            <button type="submit" disabled={smsForm.processing} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
+                                {smsForm.processing ? 'Sending...' : 'Send test SMS'}
                             </button>
                         </form>
                     </div>

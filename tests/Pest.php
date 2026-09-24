@@ -73,3 +73,30 @@ function actingAsCompany(\App\Models\User $user, \App\Models\Company $company): 
     test()->actingAs($user);
     test()->withSession(['current_company_id' => $company->id]);
 }
+
+/**
+ * Deliver a signed Stripe checkout.session.completed webhook.
+ */
+function stripeWebhookResponse(\App\Models\Company $company, \App\Models\Invoice $invoice, int $amount, string $sessionId)
+{
+    $payload = json_encode([
+        'type' => 'checkout.session.completed',
+        'data' => ['object' => [
+            'id' => $sessionId,
+            'amount_total' => $amount,
+            'payment_intent' => 'pi_'.$sessionId,
+            'metadata' => [
+                'invoice_id' => (string) $invoice->id,
+                'company_id' => (string) $company->id,
+            ],
+        ]],
+    ]);
+
+    $timestamp = time();
+    $signature = hash_hmac('sha256', $timestamp.'.'.$payload, (string) $company->stripe_webhook_secret);
+
+    return test()->call('POST', '/portal/webhooks/stripe', [], [], [], [
+        'CONTENT_TYPE' => 'application/json',
+        'HTTP_STRIPE_SIGNATURE' => "t={$timestamp},v1={$signature}",
+    ], $payload);
+}

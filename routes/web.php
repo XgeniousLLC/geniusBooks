@@ -31,6 +31,7 @@ use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\Portal\ReportController;
 use App\Http\Controllers\Portal\SearchController;
 use App\Http\Controllers\Portal\SettingsController;
+use App\Http\Controllers\Portal\StripePaymentController;
 use App\Http\Controllers\Portal\TransactionController;
 use App\Http\Controllers\Portal\VendorController;
 use Illuminate\Support\Facades\Route;
@@ -110,6 +111,7 @@ Route::prefix('portal')->name('portal.')->group(function () {
                 Route::patch('/settings/email', [EmailSettingsController::class, 'update'])->name('settings.email.update');
                 Route::post('/settings/email/templates', [EmailSettingsController::class, 'updateTemplate'])->name('settings.email.templates');
                 Route::post('/settings/email/test', [EmailSettingsController::class, 'testSend'])->name('settings.email.test');
+                Route::post('/settings/email/sms-test', [EmailSettingsController::class, 'testSms'])->name('settings.email.sms');
 
                 // Sales — payments
                 Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
@@ -179,6 +181,8 @@ Route::prefix('portal')->name('portal.')->group(function () {
                 Route::patch('/settings/invoices', [SettingsController::class, 'updateInvoices'])->name('settings.invoices.update');
                 Route::get('/settings/tax', [SettingsController::class, 'tax'])->name('settings.tax');
                 Route::patch('/settings/tax', [SettingsController::class, 'updateTax'])->name('settings.tax.update');
+                Route::get('/settings/payments', [SettingsController::class, 'payments'])->name('settings.payments');
+                Route::patch('/settings/payments', [SettingsController::class, 'updatePayments'])->name('settings.payments.update');
                 Route::get('/settings/export', [SettingsController::class, 'export'])->name('settings.export');
 
                 // Global search
@@ -207,6 +211,12 @@ Route::prefix('portal')->name('portal.')->middleware('throttle:portal-auth')->gr
 Route::prefix('portal')->name('portal.')->middleware(['signed', 'throttle:60,1'])->group(function () {
     Route::get('/invoices/public/{invoice}', [InvoiceController::class, 'public'])->name('invoices.public');
     Route::get('/invoices/public/{invoice}/pdf', [InvoiceController::class, 'publicPdf'])->name('invoices.public.pdf');
+    Route::get('/invoices/public/{invoice}/pay', [StripePaymentController::class, 'pay'])->name('invoices.public.pay');
+});
+
+// Payment gateway webhooks — verified by signature, no session/auth.
+Route::prefix('portal/webhooks')->name('portal.webhooks.')->middleware('throttle:120,1')->group(function () {
+    Route::post('/stripe', [StripePaymentController::class, 'webhook'])->name('stripe');
 });
 
 // Email verification — names must match Laravel conventions (no portal prefix).

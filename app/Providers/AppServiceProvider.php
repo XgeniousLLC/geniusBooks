@@ -43,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(CompanyContext::class);
+        $this->app->singleton(\App\Services\Sms\SmsManager::class);
     }
 
     public function boot(): void

@@ -124,6 +124,8 @@ php artisan queue:work      # in a second terminal (queued email)</code></pre>
 │   ├── Reporting/          ReportService, DashboardService
 │   ├── Documents/          InvoicePdfService
 │   ├── Imports/            CsvImportService
+│   ├── Payments/           StripeGateway (checkout + webhook verification)
+│   ├── Sms/                SmsManager + drivers (log, twilio, vonage, http)
 │   └── Export/             TenantDataExporter
 │   └── (CompanyProvisioning, DocumentNumber, AuditLogger, EmailTemplate, EmailLogger)
 └── Support/                CompanyContext, Money, FinancialYear, ListQuery
@@ -251,6 +253,9 @@ tests/Feature · tests/Unit · tests/Concerns</code></pre>
                 <tr><td><code>MAIL_MAILER</code></td><td><code>smtp</code> in production; <code>log</code> locally.</td></tr>
                 <tr><td><code>MAIL_HOST/PORT/USERNAME/PASSWORD</code></td><td>SMTP credentials.</td></tr>
                 <tr><td><code>MAIL_FROM_ADDRESS</code>, <code>MAIL_FROM_NAME</code></td><td>Platform sender identity.</td></tr>
+                <tr><td><code>SMS_DRIVER</code></td><td>SMS gateway: <code>log</code>, <code>twilio</code>, <code>vonage</code>, <code>http</code>, <code>null</code>.</td></tr>
+                <tr><td><code>TWILIO_*</code>, <code>VONAGE_*</code></td><td>Credentials for the Twilio / Vonage drivers.</td></tr>
+                <tr><td><code>SMS_HTTP_URL</code>, <code>SMS_HTTP_METHOD</code>, <code>SMS_HTTP_TOKEN</code></td><td>Generic HTTP gateway (SSLWireless, BulkSMSBD, …).</td></tr>
                 <tr><td><code>DEMO_EMAIL</code>, <code>DEMO_PASSWORD</code></td><td>Optional override for the demo account.</td></tr>
                 <tr><td><code>AWS_*</code></td><td>Only when using an S3-compatible disk (see deployment guide).</td></tr>
             </table>

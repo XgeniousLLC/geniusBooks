@@ -10,6 +10,7 @@ use App\Models\EmailLog;
 use App\Models\EmailTemplate;
 use App\Services\EmailLogger;
 use App\Services\EmailTemplateService;
+use App\Services\Sms\SmsManager;
 use App\Support\CompanyContext;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -72,7 +73,9 @@ class EmailSettingsController extends Controller
                 'notify_payment_received' => (bool) $company->notify_payment_received,
                 'notify_invoice_due' => (bool) $company->notify_invoice_due,
                 'notify_invoice_overdue' => (bool) $company->notify_invoice_overdue,
+                'sms_notifications_enabled' => (bool) $company->sms_notifications_enabled,
             ],
+            'smsDriver' => config('sms.driver'),
             'templates' => $templates,
             'logs' => $logs,
             'variables' => [
@@ -97,6 +100,7 @@ class EmailSettingsController extends Controller
             'notify_payment_received' => ['boolean'],
             'notify_invoice_due' => ['boolean'],
             'notify_invoice_overdue' => ['boolean'],
+            'sms_notifications_enabled' => ['boolean'],
         ]);
 
         $data['reminders_enabled'] = $request->boolean('reminders_enabled');
@@ -104,6 +108,7 @@ class EmailSettingsController extends Controller
         $data['notify_payment_received'] = $request->boolean('notify_payment_received');
         $data['notify_invoice_due'] = $request->boolean('notify_invoice_due');
         $data['notify_invoice_overdue'] = $request->boolean('notify_invoice_overdue');
+        $data['sms_notifications_enabled'] = $request->boolean('sms_notifications_enabled');
 
         $this->company()->update($data);
 
@@ -146,6 +151,23 @@ class EmailSettingsController extends Controller
         $this->logger->log($company->id, $data['email'], $subject, EmailLog::STATUS_QUEUED, TestEmail::class);
 
         return back()->with('success', 'Test email sent to '.$data['email'].'.');
+    }
+
+    public function testSms(Request $request, SmsManager $sms): RedirectResponse
+    {
+        Gate::authorize(Permission::ManageSettings);
+
+        $data = $request->validate([
+            'phone' => ['required', 'string', 'max:32'],
+        ]);
+
+        try {
+            $sms->send($data['phone'], 'Test SMS from '.$this->company()->name.' at '.now()->toDateTimeString());
+        } catch (\Throwable $e) {
+            return back()->with('error', 'SMS failed: '.$e->getMessage());
+        }
+
+        return back()->with('success', 'Test SMS sent to '.$data['phone'].'.');
     }
 
     private function company(): Company

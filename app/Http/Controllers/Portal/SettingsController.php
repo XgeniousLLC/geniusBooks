@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Enums\Permission;
 use App\Http\Controllers\Controller;
+use App\Models\BankAccount;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Services\DocumentNumberService;
@@ -148,6 +149,63 @@ class SettingsController extends Controller
         return response()
             ->download($path, 'export-'.now()->format('Ymd-His').'.zip')
             ->deleteFileAfterSend(true);
+    }
+
+    public function payments(): Response
+    {
+        Gate::authorize(Permission::ManageCompany);
+        $company = $this->company();
+
+        return Inertia::render('Settings/Payments', [
+            'settings' => [
+                'online_payments_enabled' => (bool) $company->online_payments_enabled,
+                'has_secret' => ! empty($company->stripe_secret_key),
+                'has_webhook_secret' => ! empty($company->stripe_webhook_secret),
+                'deposit_account_id' => $company->stripe_deposit_account_id,
+            ],
+            'accounts' => BankAccount::query()->active()->orderBy('name')->get(['id', 'name']),
+            'webhookUrl' => route('portal.webhooks.stripe'),
+        ]);
+    }
+
+    public function updatePayments(Request $request): RedirectResponse
+    {
+        Gate::authorize(Permission::ManageCompany);
+        $company = $this->company();
+
+        $data = $request->validate([
+            'online_payments_enabled' => ['boolean'],
+            'stripe_secret_key' => ['nullable', 'string', 'max:255'],
+            'stripe_webhook_secret' => ['nullable', 'string', 'max:255'],
+            'stripe_deposit_account_id' => ['nullable', Rule::exists('bank_accounts', 'id')->where('company_id', $company->id)],
+        ]);
+
+        $enabled = $request->boolean('online_payments_enabled');
+
+        if ($enabled && empty($data['stripe_secret_key']) && empty($company->stripe_secret_key)) {
+            return back()->withErrors(['stripe_secret_key' => 'A Stripe secret key is required to enable online payments.']);
+        }
+
+        if ($enabled && empty($data['stripe_deposit_account_id'])) {
+            return back()->withErrors(['stripe_deposit_account_id' => 'Choose the account that receives online payments.']);
+        }
+
+        $update = [
+            'online_payments_enabled' => $enabled,
+            'stripe_deposit_account_id' => $data['stripe_deposit_account_id'] ?? null,
+        ];
+
+        if (! empty($data['stripe_secret_key'])) {
+            $update['stripe_secret_key'] = $data['stripe_secret_key'];
+        }
+
+        if (! empty($data['stripe_webhook_secret'])) {
+            $update['stripe_webhook_secret'] = $data['stripe_webhook_secret'];
+        }
+
+        $company->update($update);
+
+        return back()->with('success', 'Online payment settings updated.');
     }
 
     public function tax(): Response

@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            'portal/webhooks/*',
+        ]);
+
         $middleware->web(append: [
             \App\Http\Middleware\AddRequestContext::class,
             \App\Http\Middleware\HandleInertiaRequests::class,

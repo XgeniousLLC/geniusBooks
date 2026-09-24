@@ -46,7 +46,7 @@ it('renders every portal page without server errors', function () {
         '/portal/transactions', '/portal/transactions/create',
         '/portal/reports', '/portal/reports/profit-and-loss', '/portal/reports/income', '/portal/reports/expenses',
         '/portal/reports/receivables', '/portal/reports/tax-summary', "/portal/reports/customers/{$customer->id}/statement",
-        '/portal/settings/business', '/portal/settings/invoices', '/portal/settings/tax', '/portal/settings/email', '/portal/settings/users',
+        '/portal/settings/business', '/portal/settings/invoices', '/portal/settings/tax', '/portal/settings/email', '/portal/settings/payments', '/portal/settings/users',
         '/portal/search?q=acme',
         '/portal/profile',
     ];

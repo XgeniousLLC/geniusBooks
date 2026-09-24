@@ -53,6 +53,7 @@ class PaymentService
             $account = $this->account($company, $data['bank_account_id']);
 
             $payment = Payment::create([
+                'company_id' => $company->id,
                 'customer_id' => $customer->id,
                 'bank_account_id' => $account->id,
                 'date' => $data['date'],

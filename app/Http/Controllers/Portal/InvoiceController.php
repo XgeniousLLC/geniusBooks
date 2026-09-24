@@ -284,6 +284,10 @@ class InvoiceController extends Controller
         $invoice->markViewed();
         $invoice->refresh();
 
+        $canPay = app(\App\Services\Payments\StripeGateway::class)->isConfigured($invoice->company)
+            && ! $invoice->isCancelled()
+            && $invoice->balance() > 0;
+
         return Inertia::render('Invoices/Public', [
             'invoice' => $this->presentDetail($invoice),
             'company' => $invoice->company->only([
@@ -291,6 +295,14 @@ class InvoiceController extends Controller
                 'payment_instructions', 'invoice_footer',
             ]),
             'pdfUrl' => $this->delivery->publicPdfUrl($invoice),
+            'canPay' => $canPay,
+            'payUrl' => $canPay
+                ? \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                    'portal.invoices.public.pay',
+                    now()->addDays(30),
+                    ['invoice' => $invoice->id],
+                )
+                : null,
         ]);
     }
 

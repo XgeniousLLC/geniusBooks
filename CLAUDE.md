@@ -17,6 +17,8 @@ Invoices → Payments → Expenses → Transactions → Reports**.
 - **Admin UI**: Laravel Blade + Alpine.js
 - **Database**: MySQL (production) / SQLite (local default)
 - **Packages**: `spatie/laravel-permission` (teams = company), `barryvdh/laravel-dompdf`
+- **Integrations**: SMS via `App\Services\Sms\SmsManager` (drivers: log/twilio/vonage/http);
+  online payments via Stripe (`App\Services\Payments\StripeGateway`, Laravel HTTP client, no SDK)
 - **Queue / Scheduler**: Laravel Queue (database driver) + Supervisor + cron
 - **Auth**: session guards — `admin` (platform) and `web` (tenant members)
 
@@ -49,7 +51,7 @@ app/Http/Middleware/          # ResolveCurrentCompany, AddRequestContext, AdminA
 app/Models/                   # Company, Customer, Invoice, Payment, Expense, Transaction, …
 app/Models/Concerns/          # BelongsToCompany, Auditable, Voidable
 app/Policies/                 # one per model
-app/Services/                 # Accounting, Invoicing, Reporting, Documents, Imports, Export
+app/Services/                 # Accounting, Invoicing, Reporting, Documents, Imports, Export, Sms, Payments
 app/Support/                  # CompanyContext, Money, FinancialYear, ListQuery
 app/Enums/                    # CompanyRole, Permission, InvoiceStatus, TransactionType, …
 resources/js/pages/           # portal Inertia React pages
@@ -83,6 +85,10 @@ php artisan test
 ./vendor/bin/pint
 npm run lint
 npm run build
+
+# Integrations
+php artisan mail:test you@example.com
+php artisan sms:test +1234567890
 ```
 
 ## Demo Credentials

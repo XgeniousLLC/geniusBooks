@@ -68,7 +68,15 @@ MAIL_PORT=587
 MAIL_USERNAME=...
 MAIL_PASSWORD=...
 MAIL_FROM_ADDRESS="billing@yourdomain.com"
-MAIL_FROM_NAME="Xgenious Accounting"</code></pre>
+MAIL_FROM_NAME="Xgenious Accounting"
+
+# SMS notifications (driver: log, twilio, vonage, http, null)
+SMS_DRIVER=log
+SMS_FROM="Xgenious Accounting"
+# SMS_HTTP_URL=https://sms-provider.example/api/send
+# SMS_HTTP_TOKEN=...
+# TWILIO_SID= / TWILIO_TOKEN= / TWILIO_FROM=
+# VONAGE_KEY= / VONAGE_SECRET= / VONAGE_FROM=</code></pre>
 
             <h3>Common deploy steps (all environments)</h3>
             <pre><code>composer install --no-dev --optimize-autoloader
@@ -87,6 +95,12 @@ php artisan storage:link</code></pre>
                 written to the private disk at <code>storage/app/private</code>, outside the web root,
                 and are only served through authorized routes. This works on every host with no
                 extra storage service.
+            </div>
+            <div class="note">
+                <strong>Online payments (Stripe)</strong> Configured per business in
+                <em>Settings → Online payments</em> (secret key, webhook signing secret, deposit
+                account). The platform must be reachable over HTTPS so Stripe can POST to the webhook
+                at <code>/portal/webhooks/stripe</code>. No server-wide Stripe credentials are needed.
             </div>
             <div class="warn">
                 <strong>Never point the web root at the project root</strong> The web root must be the

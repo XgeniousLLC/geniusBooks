@@ -1471,6 +1471,10 @@ Explicitly out of MVP scope; recorded so scope stays controlled.
 **Phase 2 — delivered so far**
 - Recurring invoices (`invoices:generate-recurring` generates draft occurrences from a
   recurring invoice template).
+- SMS notifications (driver-based: log/twilio/vonage/generic HTTP; per-company toggle,
+  invoice + reminder SMS, test send).
+- Online payments with Stripe (per-company settings, public invoice "Pay now" checkout,
+  signed webhook that records the payment idempotently).
 
 **Banking & reconciliation**
 - Bank connections, statement import, transaction matching, reconciliation.
@@ -1486,7 +1490,7 @@ Explicitly out of MVP scope; recorded so scope stays controlled.
 - Auto reminders beyond MVP, recurring transactions, automatic categorization.
 
 **Integrations & platforms**
-- Payment gateways (Stripe, PayPal, Razorpay, Mollie, Xendit), payroll, inventory,
+- Additional payment gateways (PayPal, Razorpay, Mollie, Xendit), payroll, inventory,
   mobile apps.
 
 **AI**
