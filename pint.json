@@ -1,0 +1,8 @@
+{
+    "preset": "laravel",
+    "rules": {
+        "single_quote": true,
+        "not_operator_with_successor_space": true,
+        "simplified_null_return": true
+    }
+}
