@@ -22,6 +22,18 @@ export default [
                 fetch: 'readonly',
                 console: 'readonly',
                 import: 'readonly',
+                setTimeout: 'readonly',
+                clearTimeout: 'readonly',
+                setInterval: 'readonly',
+                clearInterval: 'readonly',
+                File: 'readonly',
+                FileList: 'readonly',
+                Blob: 'readonly',
+                FormData: 'readonly',
+                URL: 'readonly',
+                crypto: 'readonly',
+                Math: 'readonly',
+                Date: 'readonly',
             },
         },
         plugins: {
@@ -39,6 +51,18 @@ export default [
         },
         settings: {
             react: { version: 'detect' },
+        },
+    },
+    {
+        files: ['resources/js/**/*.js'],
+        languageOptions: {
+            globals: {
+                window: 'readonly',
+                document: 'readonly',
+                console: 'readonly',
+                setTimeout: 'readonly',
+                clearTimeout: 'readonly',
+            },
         },
     },
     prettierConfig,

@@ -23,7 +23,7 @@ class AuthController extends Controller
     public function login(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
@@ -33,6 +33,7 @@ class AuthController extends Controller
 
         if (! Auth::guard('web')->user()->is_active) {
             Auth::guard('web')->logout();
+
             return back()->withErrors(['email' => 'Your account is inactive.'])->onlyInput('email');
         }
 
@@ -49,22 +50,22 @@ class AuthController extends Controller
     public function register(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', 'unique:users'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'confirmed', PasswordRule::defaults()],
         ]);
 
         $user = User::create([
-            'name'      => $data['name'],
-            'email'     => $data['email'],
-            'password'  => Hash::make($data['password']),
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
             'is_active' => true,
         ]);
 
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('portal.home');
+        return redirect()->route('verification.notice');
     }
 
     public function showForgotPassword(): Response
@@ -92,8 +93,8 @@ class AuthController extends Controller
     public function resetPassword(Request $request): RedirectResponse
     {
         $request->validate([
-            'token'    => ['required'],
-            'email'    => ['required', 'email'],
+            'token' => ['required'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', PasswordRule::defaults()],
         ]);
 

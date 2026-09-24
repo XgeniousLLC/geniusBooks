@@ -11,9 +11,37 @@ export interface Admin {
     email: string;
 }
 
+export interface Company {
+    id: number;
+    name: string;
+    slug?: string;
+    currency?: string;
+    logo_path?: string | null;
+}
+
+export interface CompanyOption {
+    id: number;
+    name: string;
+}
+
+export interface ImportResult {
+    imported: number;
+    skipped: number;
+    errors: { row: number; message: string }[];
+}
+
 export interface PageProps {
-    auth: { user: User };
-    flash?: { success?: string; error?: string; status?: string };
+    auth: { user: User; roles: string[] };
+    currentCompany?: Company | null;
+    companies?: CompanyOption[];
+    impersonating?: boolean;
+    demo?: { email: string; password: string };
+    flash?: {
+        success?: string;
+        error?: string;
+        status?: string;
+        importResult?: ImportResult | null;
+    };
     errors?: Record<string, string>;
 }
 

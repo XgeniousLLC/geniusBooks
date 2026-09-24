@@ -1,6 +1,6 @@
 import PortalLayout from '@/layouts/PortalLayout';
-import { useForm, usePage } from '@inertiajs/react';
-import { type User, type PageProps } from '@/types';
+import { useForm, router } from '@inertiajs/react';
+import { type User } from '@/types';
 import { useState } from 'react';
 
 interface Props {
@@ -49,7 +49,6 @@ function InputField({
 
 export default function ProfileEdit({ user }: Props) {
     const [activeTab, setActiveTab] = useState<Tab>('info');
-    const { auth } = usePage<PageProps>().props;
 
     const infoForm = useForm({ name: user.name, email: user.email });
     const pwForm = useForm({ current_password: '', password: '', password_confirmation: '' });
@@ -212,6 +211,23 @@ export default function ProfileEdit({ user }: Props) {
                         </form>
                     </div>
                 )}
+
+                <div className="mt-6 bg-white rounded-xl border border-red-200 shadow-sm p-5">
+                    <h2 className="text-sm font-semibold text-red-700">Danger zone</h2>
+                    <p className="mt-1 text-sm text-slate-500">
+                        Deleting your account is permanent. You must transfer ownership of any business you solely own first.
+                    </p>
+                    <button
+                        onClick={() => {
+                            if (window.confirm('Delete your account permanently?')) {
+                                router.post('/portal/account');
+                            }
+                        }}
+                        className="mt-3 rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                    >
+                        Delete account
+                    </button>
+                </div>
             </div>
         </PortalLayout>
     );

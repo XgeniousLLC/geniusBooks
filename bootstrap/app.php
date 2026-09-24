@@ -12,12 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
+            \App\Http\Middleware\AddRequestContext::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
         $middleware->alias([
-            'admin'          => \App\Http\Middleware\AdminAuth::class,
-            'customer'       => \App\Http\Middleware\RedirectIfNotCustomer::class,
+            'admin' => \App\Http\Middleware\AdminAuth::class,
+            'customer' => \App\Http\Middleware\RedirectIfNotCustomer::class,
             'guest.customer' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+            'company' => \App\Http\Middleware\ResolveCurrentCompany::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

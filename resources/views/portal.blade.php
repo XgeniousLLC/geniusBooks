@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" href="/favicon.ico">
-    <title>{{ config('app.name') }} - Support Portal</title>
+    <title>{{ config('app.name') }} - Accounting</title>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/portal.tsx'])
     @inertiaHead

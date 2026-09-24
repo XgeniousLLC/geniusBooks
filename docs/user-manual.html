@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Xgenious Accounting — User Manual</title>
+    <link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<div class="layout">
+    <nav class="toc">
+        <h2>User Manual</h2>
+        <ol>
+            <li><a href="#intro">1. Introduction</a></li>
+            <li><a href="#roles">2. Roles &amp; permissions</a></li>
+            <li><a href="#start">3. Getting started</a></li>
+            <li><a href="#dashboard">4. Dashboard</a></li>
+            <li><a href="#customers">5. Customers</a></li>
+            <li><a href="#products">6. Products &amp; Services</a></li>
+            <li><a href="#invoices">7. Invoices</a></li>
+            <li><a href="#payments">8. Payments &amp; credit</a></li>
+            <li><a href="#expenses">9. Expenses &amp; Vendors</a></li>
+            <li><a href="#accounts">10. Accounts (bank/cash)</a></li>
+            <li><a href="#coa">11. Chart of accounts</a></li>
+            <li><a href="#transactions">12. Transactions</a></li>
+            <li><a href="#reports">13. Reports</a></li>
+            <li><a href="#settings">14. Settings</a></li>
+            <li><a href="#team">15. Team &amp; invitations</a></li>
+            <li><a href="#search">16. Search</a></li>
+            <li><a href="#profile">17. Profile &amp; account</a></li>
+            <li><a href="#troubleshoot">18. Troubleshooting</a></li>
+            <li><a href="#glossary">19. Glossary</a></li>
+        </ol>
+    </nav>
+
+    <main>
+        <div class="hero">
+            <a class="back" href="index.html">← Documentation home</a>
+            <span class="eyebrow">User Manual</span>
+            <h1>Using Xgenious Accounting</h1>
+            <p>A complete guide for business owners, accountants and staff.</p>
+        </div>
+
+        <section id="intro">
+            <h2>1. Introduction</h2>
+            <p>Xgenious Accounting helps a business manage customers, sell (invoices), collect money
+                (payments), record spending (expenses) and understand the numbers (reports). Each
+                business is an isolated <strong>workspace</strong>; you may belong to more than one.</p>
+            <p>The portal lives at <code>/portal</code>. If you are not signed in you will be sent to
+                <code>/portal/login</code>.</p>
+        </section>
+
+        <section id="roles">
+            <h2>2. Roles &amp; permissions</h2>
+            <p>Every member has one of three roles in a business. Owners assign roles in
+                <a href="#team">Users &amp; Roles</a>.</p>
+            <table>
+                <tr><th>Area</th><th>Owner</th><th>Accountant</th><th>Staff</th></tr>
+                <tr><td>Dashboard</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                <tr><td>Customers, Products</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                <tr><td>Invoices</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                <tr><td>Record payments</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                <tr><td>Void payment / issue credit note</td><td>✓</td><td>✓</td><td>—</td></tr>
+                <tr><td>Expenses &amp; Vendors</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                <tr><td>Accounts, Chart of accounts, Transactions</td><td>✓</td><td>✓</td><td>—</td></tr>
+                <tr><td>Reports &amp; statements</td><td>✓</td><td>✓</td><td>—</td></tr>
+                <tr><td>Settings (business, invoice, tax, email)</td><td>✓</td><td>—</td><td>—</td></tr>
+                <tr><td>Users &amp; Roles, data export</td><td>✓</td><td>—</td><td>—</td></tr>
+            </table>
+            <div class="note">
+                <strong>Good to know</strong> Menu items you do not have access to are hidden, and the
+                platform blocks the underlying action as well.
+            </div>
+        </section>
+
+        <section id="start">
+            <h2>3. Getting started</h2>
+            <h3>Sign in</h3>
+            <ol>
+                <li>Go to <code>/portal/login</code>.</li>
+                <li>Enter your email and password. Tick <em>Remember me</em> to stay signed in.</li>
+                <li>Forgot your password? Use <em>Forgot password?</em> to receive a reset link.</li>
+            </ol>
+
+            <h3>Create your business (first time)</h3>
+            <p>After registering you verify your email, then a 3-step wizard asks for:</p>
+            <ol>
+                <li><strong>Business details</strong> — name, email, phone, country, address.</li>
+                <li><strong>Currency &amp; financial year</strong> — currency, timezone, when your
+                    financial year starts.</li>
+                <li><strong>Tax &amp; invoicing</strong> — default tax rate, invoice prefix and number
+                    padding, default payment terms.</li>
+            </ol>
+            <p>On save, the workspace is created and seeded with a chart of accounts, expense
+                categories and email templates.</p>
+
+            <h3>Switch or add a business</h3>
+            <ul>
+                <li>Click the <strong>Business</strong> dropdown at the top of the sidebar to switch
+                    between businesses you belong to.</li>
+                <li>Choose <strong>+ New business</strong> to create an additional workspace (you
+                    become its owner).</li>
+            </ul>
+        </section>
+
+        <section id="dashboard">
+            <h2>4. Dashboard</h2>
+            <p>Your financial overview for the selected period.</p>
+            <ul>
+                <li><strong>KPI cards</strong> — Total revenue, Total expenses, Outstanding invoices,
+                    Overdue invoices, Net income.</li>
+                <li><strong>Revenue vs expenses</strong> — last six months side by side.</li>
+                <li><strong>Revenue trend</strong> — toggle monthly/weekly.</li>
+                <li><strong>Expense breakdown</strong> — by category.</li>
+                <li><strong>Recent transactions</strong> and <strong>Outstanding invoices</strong>
+                    with links to the full records.</li>
+            </ul>
+            <p>Use the period buttons (This month / quarter / year / Financial year) at the top right
+                to change the KPIs.</p>
+        </section>
+
+        <section id="customers">
+            <h2>5. Customers</h2>
+            <p><strong>Sales → Customers</strong>. Manage everyone you invoice.</p>
+            <h3>Add a customer</h3>
+            <ol>
+                <li>Click <strong>New customer</strong>.</li>
+                <li>Fill in name (required), company, email, phone, tax ID, billing/shipping
+                    addresses, payment terms and notes.</li>
+                <li>Save.</li>
+            </ol>
+            <p>The customer's currency is locked to your business currency.</p>
+
+            <h3>Find, filter and archive</h3>
+            <ul>
+                <li>Search by name, email or company; filter by status (Active/Archived).</li>
+                <li>Click a customer name to open their profile.</li>
+                <li>Select rows and use <strong>Archive</strong> / <strong>Activate</strong> for bulk
+                    updates.</li>
+            </ul>
+
+            <h3>Customer profile &amp; statement</h3>
+            <ul>
+                <li>Summary of Invoiced, Paid, Credited, Opening, Outstanding and Credit balance.</li>
+                <li>Recent invoices and payments.</li>
+                <li><strong>Statement</strong> opens a period statement you can export (CSV/PDF) or
+                    email.</li>
+                <li><strong>Opening balance</strong> — record an amount the customer already owed (or
+                    a credit) at a chosen date. It is posted to the ledger, not typed into a field.</li>
+            </ul>
+
+            <h3>Import customers</h3>
+            <p><strong>Import CSV</strong> uploads a file with a header row and a <code>name</code>
+                column. Download the template for the exact columns. The import is validated first:
+                if any row is invalid, <em>nothing</em> is saved and the bad rows are listed.
+                Duplicate customers (same email) are skipped and reported.</p>
+        </section>
+
+        <section id="products">
+            <h2>6. Products &amp; Services</h2>
+            <p><strong>Sales → Products &amp; Services</strong>. Reusable items that speed up
+                invoicing.</p>
+            <ul>
+                <li>Fields: name, SKU, type (product/service), unit price, tax rate, category, status,
+                    description.</li>
+                <li>SKU must be unique within your business.</li>
+                <li>Search by name/SKU and filter by type, category or status.</li>
+                <li>Bulk archive/activate from the list.</li>
+                <li>Import in bulk with the same CSV validation rules as customers.</li>
+            </ul>
+        </section>
+
+        <section id="invoices">
+            <h2>7. Invoices</h2>
+            <p><strong>Sales → Invoices</strong>. The heart of the product.</p>
+            <h3>Create an invoice</h3>
+            <ol>
+                <li>Click <strong>New invoice</strong> and pick the customer, issue date and due
+                    date.</li>
+                <li>Add line items: choose a product/service (fills description, price and tax) or
+                    type a custom line.</li>
+                <li>Optionally add a line discount (percent or fixed) and an invoice-level
+                    discount.</li>
+                <li>Add notes and terms. The summary updates live (subtotal, discount, tax,
+                    total).</li>
+                <li>Save — it starts as a <strong>Draft</strong> with the next invoice number.</li>
+            </ol>
+            <div class="note">
+                <strong>Calculation order</strong> Line total = qty × price; apply line discounts;
+                apply the invoice discount; then tax per line (exclusive or inclusive depending on
+                your tax settings). The server recalculates and stores the authoritative totals.
+            </div>
+
+            <h3>Invoice statuses</h3>
+            <table>
+                <tr><th>Status</th><th>Meaning</th></tr>
+                <tr><td>Draft</td><td>Being prepared; editable and deletable.</td></tr>
+                <tr><td>Sent</td><td>Issued to the customer.</td></tr>
+                <tr><td>Viewed</td><td>Customer opened the shared link.</td></tr>
+                <tr><td>Partially paid</td><td>Some payment received.</td></tr>
+                <tr><td>Paid</td><td>Settled by payments and/or credits.</td></tr>
+                <tr><td>Overdue</td><td>Past due with a balance remaining.</td></tr>
+                <tr><td>Cancelled</td><td>Voided; excluded from revenue and receivables.</td></tr>
+            </table>
+
+            <h3>Actions on an invoice</h3>
+            <ul>
+                <li><strong>Edit</strong> — draft invoices only.</li>
+                <li><strong>Mark as sent</strong> — moves a draft to Sent.</li>
+                <li><strong>Download PDF / Print</strong> — professional PDF with your logo, payment
+                    instructions and footer.</li>
+                <li><strong>Email invoice</strong> — sends the PDF to the customer's email using your
+                    email template.</li>
+                <li><strong>Record payment</strong> — jump straight to a payment pre-filled with this
+                    invoice.</li>
+                <li><strong>Credit note</strong> — issue a credit against the invoice (see
+                    <a href="#payments">Payments &amp; credit</a>).</li>
+                <li><strong>Duplicate</strong> — copy everything into a new draft with a new number.</li>
+                <li><strong>Cancel</strong> — void the invoice (issued invoices are cancelled, never
+                    deleted).</li>
+                <li><strong>Delete</strong> — drafts only.</li>
+            </ul>
+            <p>Every invoice has a secure <strong>public link</strong> (sent in the email) so the
+                customer can view and download it without logging in.</p>
+        </section>
+
+        <section id="payments">
+            <h2>8. Payments &amp; credit</h2>
+            <p><strong>Sales → Payments</strong>. Record money received and how it is applied.</p>
+            <h3>Record a payment</h3>
+            <ol>
+                <li>Click <strong>Record payment</strong>.</li>
+                <li>Choose the customer, the account the money landed in, the date, amount and
+                    method.</li>
+                <li>Allocate the amount across the customer's open invoices (use
+                    <strong>Auto-allocate</strong> or type amounts per invoice).</li>
+                <li>Anything not allocated is kept as <strong>customer credit</strong>.</li>
+                <li>Optionally email a receipt.</li>
+            </ol>
+            <p>Recording a payment updates the invoice balance and status automatically and posts a
+                matching ledger entry to the chosen account.</p>
+
+            <h3>Partial, over and multi-invoice payments</h3>
+            <ul>
+                <li><strong>Partial</strong> → invoice becomes Partially paid, the remainder stays
+                    outstanding.</li>
+                <li><strong>Overpayment</strong> → the excess becomes customer credit (visible on the
+                    customer profile).</li>
+                <li><strong>Multiple invoices</strong> → one payment can settle several invoices.</li>
+            </ul>
+
+            <h3>Void a payment</h3>
+            <p>Open the payment and choose <strong>Void</strong> with a reason. The ledger entry is
+                reversed and the affected invoices recalculated to their correct balances.</p>
+
+            <h3>Credit notes &amp; refunds</h3>
+            <p>On an invoice choose <strong>Credit note</strong>. Enter the amount and reason. If you
+                pick a refund account, the credit is paid back out of that account; otherwise it
+                simply reduces the invoice balance. All credit notes are listed under
+                <strong>Credit notes</strong>.</p>
+        </section>
+
+        <section id="expenses">
+            <h2>9. Expenses &amp; Vendors</h2>
+            <p><strong>Expenses → Expenses</strong> records money going out.</p>
+            <h3>Categories</h3>
+            <p>Default categories (Advertising, Software, Office, Travel, Utilities, Rent, Payroll,
+                Professional Services, Equipment, Banking Fees, Taxes, Other) are created with your
+                business. Add your own from <strong>Categories</strong>; a category in use cannot be
+                deleted.</p>
+
+            <h3>Vendors</h3>
+            <p><strong>Expenses → Vendors</strong> stores the suppliers you pay (name, email, phone,
+                address, tax ID, notes). A vendor with expenses cannot be deleted — archive it
+                instead.</p>
+
+            <h3>Record an expense</h3>
+            <ol>
+                <li>Click <strong>New expense</strong>.</li>
+                <li>Enter date, amount (total paid), any tax included, description, category, vendor
+                    and the account it was paid from.</li>
+                <li>Attach a receipt (PDF/JPG/PNG up to 10MB).</li>
+                <li>Optionally mark it <strong>recurring</strong> (weekly/monthly/yearly).</li>
+            </ol>
+            <p>The expense is posted to the ledger, reducing the chosen account. Recurring expenses
+                generate their next occurrence automatically and are never duplicated for the same
+                period.</p>
+            <p>Filter the list by category, vendor, account and date range; the header shows the
+                filtered total.</p>
+        </section>
+
+        <section id="accounts">
+            <h2>10. Accounts (bank/cash)</h2>
+            <p><strong>Accounting → Accounts</strong> are the real-world places money sits: banks,
+                cash, PayPal.</p>
+            <ul>
+                <li>Create an account with a name, type, opening balance and currency.</li>
+                <li>The account page shows the <strong>current balance</strong> (derived from the
+                    opening balance plus all transactions) and a running-balance history.</li>
+                <li>Balances are never typed in directly — they always come from the ledger.</li>
+            </ul>
+        </section>
+
+        <section id="coa">
+            <h2>11. Chart of accounts</h2>
+            <p><strong>Accounting → Chart of accounts</strong> is the accounting structure
+                (Assets, Liabilities, Equity, Revenue, Expenses) with sensible defaults. Add accounts
+                or sub-accounts, set a code and parent. Movements roll up to parents. An account with
+                transactions or sub-accounts cannot be deleted.</p>
+        </section>
+
+        <section id="transactions">
+            <h2>12. Transactions</h2>
+            <p><strong>Accounting → Transactions</strong> is the single ledger of every money
+                movement, from every module. Filter by type, direction, account, ledger account,
+                date and text; click through to the source document.</p>
+            <h3>Manual entries</h3>
+            <ul>
+                <li><strong>Transfer</strong> — move money between two accounts (both sides recorded).</li>
+                <li><strong>Adjustment</strong> — correct a balance in or out, with a reason.</li>
+                <li><strong>Record income</strong> — direct income not tied to an invoice, posted to a
+                    revenue account.</li>
+            </ul>
+            <p>Manual entries (adjustments and income) can be <strong>reversed</strong>. Payments and
+                expenses are reversed from their own void actions.</p>
+        </section>
+
+        <section id="reports">
+            <h2>13. Reports</h2>
+            <p><strong>Reports</strong> gives you:</p>
+            <ul>
+                <li><strong>Profit &amp; Loss</strong> — revenue vs expenses and net profit.</li>
+                <li><strong>Income</strong> — by customer and by month.</li>
+                <li><strong>Expenses</strong> — by category and by vendor.</li>
+                <li><strong>Receivables</strong> — outstanding and overdue invoices, aging buckets and
+                    customer balances.</li>
+                <li><strong>Tax summary</strong> — tax collected, tax paid, taxable sales.</li>
+                <li><strong>Customer statement</strong> — from a customer profile; period statement
+                    with opening/closing balance.</li>
+            </ul>
+            <p>Every report has a date range (defaults to your financial year) and can be exported to
+                <strong>CSV</strong> or <strong>PDF</strong>.</p>
+        </section>
+
+        <section id="settings">
+            <h2>14. Settings</h2>
+            <p>Owner-only. Available under <strong>Settings</strong>.</p>
+            <h3>Business</h3>
+            <ul>
+                <li>Name, email, phone, country, address and address.</li>
+                <li><strong>Logo</strong> — used on invoices and PDFs.</li>
+                <li><strong>Currency</strong>, a custom <strong>currency symbol</strong> and whether
+                    the symbol appears <strong>before or after</strong> the amount.</li>
+                <li>Timezone and financial-year start month/day.</li>
+            </ul>
+            <h3>Invoice settings</h3>
+            <p>Invoice prefix, number padding, default payment terms and invoice terms/footer. The
+                next invoice number is previewed as you change the prefix.</p>
+            <h3>Tax settings</h3>
+            <p>Tax registration number, default tax rate and whether prices are tax-inclusive by
+                default. No country-specific rules are hard-coded.</p>
+            <h3>Email settings</h3>
+            <p>Sender name and reply-to, invoice payment instructions and footer, automatic reminder
+                timing, per-notification toggles (invoice sent, payment received, due, overdue),
+                editable email templates and a <strong>Send test email</strong> button.</p>
+            <h3>Data export</h3>
+            <p>Download a ZIP of your business data (customers, invoices, payments, credit notes,
+                expenses, transactions) as CSV files.</p>
+        </section>
+
+        <section id="team">
+            <h2>15. Team &amp; invitations</h2>
+            <p><strong>Settings → Users &amp; Roles</strong> (owner only).</p>
+            <ol>
+                <li>Enter a teammate's email, choose a role and <strong>Send invitation</strong>.</li>
+                <li>They receive a link, set their name/password (or sign in if they already have an
+                    account) and join the business.</li>
+                <li>Change anyone's role from the members list, deactivate/reactivate, or remove them.</li>
+            </ol>
+            <div class="note">
+                <strong>Owner protection</strong> The last owner of a business cannot be removed,
+                deactivated or demoted. Transfer ownership first.
+            </div>
+        </section>
+
+        <section id="search">
+            <h2>16. Search</h2>
+            <p>Use the search box in the header (or <code>/portal/search</code>) to find customers,
+                invoices, payments, expenses and transactions. Results are grouped by type and respect
+                your access level.</p>
+        </section>
+
+        <section id="profile">
+            <h2>17. Profile &amp; account</h2>
+            <p>Under <strong>Profile</strong> you can update your name/email and change your password.
+                The <strong>Danger zone</strong> lets you delete your account — this deactivates and
+                anonymises your login and removes your memberships. You must transfer ownership of any
+                business you solely own first.</p>
+        </section>
+
+        <section id="troubleshoot">
+            <h2>18. Troubleshooting</h2>
+            <h3>"These credentials do not match our records."</h3>
+            <p>Check the email exactly, or use <em>Forgot password?</em>. If you are testing the demo,
+                the demo account only exists after seeding (<code>php artisan db:seed --class=DemoDataSeeder</code>).</p>
+            <h3>I can't see a menu item</h3>
+            <p>Your role may not include it. See <a href="#roles">Roles &amp; permissions</a>. Owners
+                can change roles under Settings → Users &amp; Roles.</p>
+            <h3>An email didn't arrive</h3>
+            <p>Emails are queued. Make sure a queue worker is running (<code>php artisan queue:work</code>)
+                and mail is configured. In local/dev the mailer writes to the log instead of sending.
+                Use <strong>Send test email</strong> in settings to verify.</p>
+            <h3>Why can't I edit an invoice?</h3>
+            <p>Only drafts are editable. Once sent, issue a credit note or cancel and recreate.</p>
+        </section>
+
+        <section id="glossary">
+            <h2>19. Glossary</h2>
+            <table>
+                <tr><th>Term</th><th>Meaning</th></tr>
+                <tr><td>Workspace / Business</td><td>An isolated tenant with its own data.</td></tr>
+                <tr><td>Ledger</td><td>The running record of all money movements (transactions).</td></tr>
+                <tr><td>Chart of accounts</td><td>The accounting categories (assets, revenue, etc.).</td></tr>
+                <tr><td>Receivable</td><td>Money customers owe you (unpaid invoices).</td></tr>
+                <tr><td>Credit note</td><td>A reduction of an invoice amount.</td></tr>
+                <tr><td>Unapplied credit</td><td>Customer overpayment held for future invoices.</td></tr>
+                <tr><td>Opening balance</td><td>An amount carried into the system at start, posted to the ledger.</td></tr>
+            </table>
+        </section>
+
+        <div class="footer">
+            <a href="index.html">← Documentation home</a> · Xgenious Accounting User Manual
+        </div>
+    </main>
+</div>
+</body>
+</html>

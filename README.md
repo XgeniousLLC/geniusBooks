@@ -2,6 +2,15 @@
 
 Self-hosted app scaffold built on a base Blade admin panel with a React (Inertia) customer portal. Use this as the starting point for a new project; it ships only setup, authentication, and a fresh database.
 
+## Documentation
+
+HTML documentation lives in [`docs/`](docs/index.html):
+
+- [User Manual](docs/user-manual.html) — how to use every module.
+- [Developer Guide](docs/developer-guide.html) — architecture, setup, extending, testing.
+- [Deployment Guide](docs/deployment-guide.html) — VPS, shared hosting, AWS and DigitalOcean.
+
+
 ## Features
 
 ### Authentication System
@@ -81,8 +90,10 @@ touch database/database.sqlite
 php artisan migrate
 
 # Seed the default admin and site settings
+# Seeding example data (includes the Section 31 demo business)
 php artisan db:seed --class=AdminSeeder
 php artisan db:seed --class=SiteSettingsSeeder
+php artisan db:seed --class=DemoDataSeeder
 ```
 
 ### Step 4: Build Frontend Assets
@@ -131,9 +142,8 @@ php artisan queue:work
 ./vendor/bin/pest tests/Unit/
 ```
 
-> Note: some Feature/Unit tests in the inherited suite assert against views and
-> endpoints that no longer ship with the scaffold and fail as a result. The
-> passing tests cover admin authentication, admin/user management, and SEO analysis.
+> The full suite passes. The inherited scaffold tests (admin, pages, SEO, models) are
+> green; the accounting features are covered by per-sprint feature tests.
 
 ## Deploy
 

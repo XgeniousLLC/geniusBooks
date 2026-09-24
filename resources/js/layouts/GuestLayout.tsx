@@ -33,10 +33,9 @@ export default function GuestLayout({ children, title, subtitle }: {
 
                 {/* Footer */}
                 <p className="text-center text-xs text-gray-400 mt-6">
-                    Need help?{' '}
-                    <a href="mailto:support@example.com" className="text-indigo-500 hover:underline">
-                        Contact support
-                    </a>
+                    <a href="/legal/terms" className="hover:underline">Terms</a>
+                    <span className="mx-2">·</span>
+                    <a href="/legal/privacy" className="hover:underline">Privacy</a>
                 </p>
             </div>
         </div>

@@ -28,6 +28,20 @@
             </x-admin.sidebar-link>
         </div>
         
+        <!-- Platform -->
+        <div class="space-y-1">
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 py-2">
+                Platform
+            </div>
+            
+            <x-admin.sidebar-link 
+                :href="route('admin.companies.index')" 
+                :active="request()->routeIs('admin.companies.*')"
+                icon="building-office">
+                Businesses
+            </x-admin.sidebar-link>
+        </div>
+        
         <!-- Users Management -->
         <div class="space-y-1">
             <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 py-2">

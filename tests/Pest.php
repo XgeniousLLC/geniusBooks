@@ -13,7 +13,7 @@
 
 pest()->extend(Tests\TestCase::class)
  // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+    ->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------
@@ -44,4 +44,32 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Create a user belonging to a company with a single role.
+ *
+ * @return array{0: \App\Models\User, 1: \App\Models\Company}
+ */
+function userWithCompany(string $role = 'owner', array $companyAttributes = []): array
+{
+    $user = \App\Models\User::factory()->create();
+    $company = \App\Models\Company::factory()->create($companyAttributes);
+
+    $user->companies()->attach($company->id, ['is_active' => true]);
+
+    $provisioning = app(\App\Services\CompanyProvisioningService::class);
+    $provisioning->ensureRoles($company);
+    $provisioning->assignRole($company, $user, $role);
+
+    return [$user, $company];
+}
+
+/**
+ * Act as a user with the active company set in session.
+ */
+function actingAsCompany(\App\Models\User $user, \App\Models\Company $company): void
+{
+    test()->actingAs($user);
+    test()->withSession(['current_company_id' => $company->id]);
 }

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Xgenious Accounting — Developer Guide</title>
+    <link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<div class="layout">
+    <nav class="toc">
+        <h2>Developer Guide</h2>
+        <ol>
+            <li><a href="#arch">1. Architecture</a></li>
+            <li><a href="#stack">2. Stack &amp; requirements</a></li>
+            <li><a href="#local">3. Local setup</a></li>
+            <li><a href="#structure">4. Project structure</a></li>
+            <li><a href="#domain">5. Domain model</a></li>
+            <li><a href="#engine">6. Financial engine</a></li>
+            <li><a href="#tenancy">7. Multi-tenancy</a></li>
+            <li><a href="#auth">8. Authorization</a></li>
+            <li><a href="#jobs">9. Queues &amp; scheduler</a></li>
+            <li><a href="#env">10. Environment variables</a></li>
+            <li><a href="#testing">11. Testing</a></li>
+            <li><a href="#conventions">12. Conventions</a></li>
+            <li><a href="#extend">13. Extending the app</a></li>
+            <li><a href="#security">14. Security notes</a></li>
+            <li><a href="#debug">15. Debugging</a></li>
+        </ol>
+    </nav>
+
+    <main>
+        <div class="hero">
+            <a class="back" href="index.html">← Documentation home</a>
+            <span class="eyebrow">Developer Guide</span>
+            <h1>Developer Guide</h1>
+            <p>Architecture, setup, the financial engine, and how to extend the platform.</p>
+        </div>
+
+        <section id="arch">
+            <h2>1. Architecture</h2>
+            <p>A Laravel backend serves two user interfaces:</p>
+            <ul>
+                <li><strong>Customer portal</strong> — the accounting app, a React 19 + TypeScript SPA
+                    rendered through <a href="https://inertiajs.com">Inertia</a> at <code>/portal</code>.
+                    Pages live in <code>resources/js/pages</code>.</li>
+                <li><strong>Platform admin</strong> — a server-rendered Blade panel at <code>/admin</code>
+                    used by the SaaS operator to manage tenants (suspend, reactivate, impersonate).</li>
+            </ul>
+            <p>Domain logic lives in <strong>service classes</strong> (<code>app/Services</code>). HTTP
+                controllers stay thin: authorize → validate (Form Requests) → call a service → return an
+                Inertia response or redirect. All money movements flow through the ledger posting
+                service.</p>
+        </section>
+
+        <section id="stack">
+            <h2>2. Stack &amp; requirements</h2>
+            <div class="grid">
+                <div class="card"><h4>Backend</h4><p>Laravel 12, PHP 8.2+, Eloquent, Form Requests, Policies.</p></div>
+                <div class="card"><h4>Frontend</h4><p>React 19, TypeScript, Inertia, Vite, Tailwind CSS 4.</p></div>
+                <div class="card"><h4>Database</h4><p>MySQL 8 (production) / SQLite (local default).</p></div>
+                <div class="card"><h4>Packages</h4><p>spatie/laravel-permission (teams), barryvdh/laravel-dompdf.</p></div>
+            </div>
+            <p>Required PHP extensions: <code>mbstring</code>, <code>xml</code>, <code>curl</code>,
+                <code>zip</code>, <code>bcmath</code>, <code>intl</code>, <code>json</code>,
+                <code>gd</code>/<code>dom</code> (for PDF), and your database driver
+                (<code>pdo_mysql</code> or <code>pdo_sqlite</code>).</p>
+            <p>Node.js 20+ is needed to build assets.</p>
+        </section>
+
+        <section id="local">
+            <h2>3. Local setup</h2>
+            <pre><code># 1. Install dependencies
+composer install
+npm install
+
+# 2. Environment
+cp .env.example .env
+php artisan key:generate
+
+# 3. Database (SQLite default)
+touch database/database.sqlite
+php artisan migrate
+
+# 4. Seed admin + demo data (optional but recommended)
+php artisan db:seed --class=AdminSeeder
+php artisan db:seed --class=SiteSettingsSeeder
+php artisan db:seed --class=DemoDataSeeder
+
+# 5. Build assets (or run the dev server)
+npm run build
+# npm run dev
+
+# 6. Serve
+php artisan serve
+php artisan queue:work      # in a second terminal (queued email)</code></pre>
+            <p>Demo logins after seeding: <code>demo@&lt;host&gt;</code> (owner),
+                <code>accountant@demo.test</code>, <code>staff@demo.test</code> — password
+                <code>password</code>. Platform admin: <code>admin@example.com</code> /
+                <code>password</code>.</p>
+            <div class="tip">
+                <strong>One command</strong> <code>composer run dev</code> starts the PHP server, queue
+                listener, log viewer and Vite together (see <code>composer.json</code>).
+            </div>
+        </section>
+
+        <section id="structure">
+            <h2>4. Project structure</h2>
+            <pre><code>app/
+├── Console/Commands/       SendTestEmail, SendInvoiceReminders, GenerateRecurringExpenses
+├── Enums/                  CompanyRole, Permission, InvoiceStatus, PaymentMethod,
+│                           TransactionType, TransactionDirection, LedgerAccountType
+├── Http/
+│   ├── Controllers/Admin/   platform console (Blade)
+│   ├── Controllers/Portal/  accounting app (Inertia)
+│   ├── Middleware/          ResolveCurrentCompany, AddRequestContext, AdminAuth, …
+│   └── Requests/Portal/     Form Requests
+├── Models/                 Company, Customer, Invoice, Payment, Expense, Transaction, …
+│   └── Concerns/           BelongsToCompany, Auditable, Voidable
+├── Policies/               one policy per model
+├── Services/
+│   ├── Accounting/         LedgerPostingService, PaymentService, CreditNoteService, ExpenseService
+│   ├── Invoicing/          InvoiceCalculator, InvoiceService, InvoiceDeliveryService
+│   ├── Reporting/          ReportService, DashboardService
+│   ├── Documents/          InvoicePdfService
+│   ├── Imports/            CsvImportService
+│   └── Export/             TenantDataExporter
+│   └── (CompanyProvisioning, DocumentNumber, AuditLogger, EmailTemplate, EmailLogger)
+└── Support/                CompanyContext, Money, FinancialYear, ListQuery
+
+database/migrations · factories · seeders
+resources/js/
+├── layouts/PortalLayout.tsx
+├── components/             DataTable, FormControls, Toast
+├── lib/invoiceTotals.ts    client-side totals mirror
+└── pages/                  one folder per module
+resources/views/            admin blade, emails, documents (PDF), reports
+routes/web.php · routes/console.php
+tests/Feature · tests/Unit · tests/Concerns</code></pre>
+        </section>
+
+        <section id="domain">
+            <h2>5. Domain model</h2>
+            <table>
+                <tr><th>Model</th><th>Notes</th></tr>
+                <tr><td>Company</td><td>Tenant root: currency, symbol/position, financial year, tax, invoice numbering, delivery settings.</td></tr>
+                <tr><td>User</td><td>Tenant member; belongs to many companies; spatie roles scoped per company.</td></tr>
+                <tr><td>Customer, Product, Vendor</td><td>Directory + catalogue.</td></tr>
+                <tr><td>Invoice, InvoiceItem</td><td>Stored totals; status derived from payments/credits/dates.</td></tr>
+                <tr><td>Payment, PaymentAllocation</td><td>A payment can settle many invoices; leftovers are customer credit.</td></tr>
+                <tr><td>CreditNote</td><td>Applied against an invoice; optional refund out of an account.</td></tr>
+                <tr><td>BankAccount</td><td>Balance = opening balance + signed transactions.</td></tr>
+                <tr><td>LedgerAccount</td><td>Chart of accounts; optional in a transaction.</td></tr>
+                <tr><td>Transaction</td><td>Single-entry ledger line; linked to a bank/ledger account and source document.</td></tr>
+                <tr><td>Expense, ExpenseCategory</td><td>Money out; attachments; recurrence.</td></tr>
+                <tr><td>AuditLog</td><td>Immutable create/update/void trail.</td></tr>
+                <tr><td>DocumentSequence</td><td>Atomic per-company numbering.</td></tr>
+                <tr><td>EmailTemplate, EmailLog</td><td>Notification templates and delivery log.</td></tr>
+            </table>
+        </section>
+
+        <section id="engine">
+            <h2>6. Financial engine</h2>
+            <h3>Money</h3>
+            <p>All amounts are integer <strong>minor units</strong> (cents). <code>App\Support\Money</code>
+                is an immutable value object with half-up rounding, currency scales (JPY = 0 decimals)
+                and formatting. Formatting can be overridden per company (custom symbol / position) via
+                <code>Money::configureFormatting()</code>, called by the tenancy middleware.</p>
+
+            <h3>Invoice calculation</h3>
+            <p><code>InvoiceCalculator</code> is the single source of truth. Order: line subtotal
+                (qty × price) → line discount → invoice discount (allocated across lines with the
+                rounding remainder on the last line) → per-line tax (exclusive, or extracted when
+                inclusive). The client-side mirror in <code>resources/js/lib/invoiceTotals.ts</code>
+                powers the live preview only — the server always recomputes and stores the totals.</p>
+
+            <h3>Ledger</h3>
+            <p><code>LedgerPostingService</code> is the only place money movements are written. It
+                supports in/out postings, transfers (paired entries) and reversals (counter-entries).
+                Balances and reports are always derived from transactions; nothing mutates a balance
+                directly. Voiding reverses via a counter-entry so history stays intact.</p>
+
+            <h3>Document numbering</h3>
+            <p><code>DocumentNumberService</code> issues atomic, per-company numbers under a row lock
+                (<code>document_sequences</code>). Gaps are permitted (voided documents keep their
+                number).</p>
+        </section>
+
+        <section id="tenancy">
+            <h2>7. Multi-tenancy</h2>
+            <p>Every domain table has a <code>company_id</code> and uses the
+                <code>BelongsToCompany</code> trait:</p>
+            <ul>
+                <li>A <strong>global scope</strong> filters queries to the active company.</li>
+                <li><code>creating</code> stamps <code>company_id</code> from the context.</li>
+                <li><code>saving</code> throws if you try to persist a record for another company.</li>
+            </ul>
+            <p><code>App\Support\CompanyContext</code> is a request-scoped singleton holding the active
+                company id. <code>ResolveCurrentCompany</code> (route middleware <code>company</code>)
+                resolves it from the session (or the user's first company) and also sets the spatie
+                permission team and the Money formatting. When no context is active (console, seeds),
+                the scope is a no-op.</p>
+            <div class="warn">
+                <strong>Provisioning another company</strong> When creating a company from within an
+                active company, switch <code>CompanyContext</code> to the new company for the duration
+                of provisioning (see <code>CompanyProvisioningService::createFor</code>), otherwise the
+                tenant guard blocks writing its categories/accounts/templates.
+            </div>
+        </section>
+
+        <section id="auth">
+            <h2>8. Authorization</h2>
+            <p>Three roles per company: <strong>owner</strong>, <strong>accountant</strong>,
+                <strong>staff</strong> (<code>App\Enums\CompanyRole</code>), each mapping to coarse
+                abilities (<code>App\Enums\Permission</code>). Gates are registered in
+                <code>AppServiceProvider</code> and evaluated against the active company's team.</p>
+            <p>Use <code>Gate::authorize(Permission::X)</code> in controllers and Gates in policies.
+                Every tenant route is covered by a policy that also checks company membership. UI
+                hiding is never the only control.</p>
+        </section>
+
+        <section id="jobs">
+            <h2>9. Queues &amp; scheduler</h2>
+            <p>Queued work (invoice/reminder/statement emails) uses the <code>database</code> queue by
+                default. Run a worker in production:</p>
+            <pre><code>php artisan queue:work --tries=3 --timeout=90</code></pre>
+            <p>Scheduled tasks are declared in <code>routes/console.php</code> and need a cron entry:</p>
+            <pre><code>* * * * * cd /var/www/app && php artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code></pre>
+            <p>Registered commands:</p>
+            <table>
+                <tr><th>Command</th><th>Purpose</th></tr>
+                <tr><td><code>invoices:send-reminders</code></td><td>Due-soon and overdue reminders (daily).</td></tr>
+                <tr><td><code>expenses:generate-recurring</code></td><td>Creates due recurring expenses (daily).</td></tr>
+                <tr><td><code>mail:test {email}</code></td><td>Verifies outbound mail configuration.</td></tr>
+            </table>
+        </section>
+
+        <section id="env">
+            <h2>10. Environment variables</h2>
+            <table>
+                <tr><th>Variable</th><th>Notes</th></tr>
+                <tr><td><code>APP_ENV</code></td><td><code>production</code> in live environments.</td></tr>
+                <tr><td><code>APP_DEBUG</code></td><td><code>false</code> in production.</td></tr>
+                <tr><td><code>APP_URL</code></td><td>Full https URL; the demo email domain derives from its host.</td></tr>
+                <tr><td><code>DB_CONNECTION</code></td><td><code>mysql</code> (prod) or <code>sqlite</code>.</td></tr>
+                <tr><td><code>DB_HOST/PORT/DATABASE/USERNAME/PASSWORD</code></td><td>Database credentials.</td></tr>
+                <tr><td><code>SESSION_DRIVER</code></td><td><code>database</code>.</td></tr>
+                <tr><td><code>CACHE_STORE</code></td><td><code>database</code> (or <code>redis</code>).</td></tr>
+                <tr><td><code>QUEUE_CONNECTION</code></td><td><code>database</code> (or <code>redis</code>).</td></tr>
+                <tr><td><code>FILESYSTEM_DISK</code></td><td>Default disk (uploads use the private <code>local</code> disk in code).</td></tr>
+                <tr><td><code>MAIL_MAILER</code></td><td><code>smtp</code> in production; <code>log</code> locally.</td></tr>
+                <tr><td><code>MAIL_HOST/PORT/USERNAME/PASSWORD</code></td><td>SMTP credentials.</td></tr>
+                <tr><td><code>MAIL_FROM_ADDRESS</code>, <code>MAIL_FROM_NAME</code></td><td>Platform sender identity.</td></tr>
+                <tr><td><code>DEMO_EMAIL</code>, <code>DEMO_PASSWORD</code></td><td>Optional override for the demo account.</td></tr>
+                <tr><td><code>AWS_*</code></td><td>Only when using an S3-compatible disk (see deployment guide).</td></tr>
+            </table>
+        </section>
+
+        <section id="testing">
+            <h2>11. Testing</h2>
+            <pre><code>php artisan test          # or ./vendor/bin/pest
+./vendor/bin/pint         # PHP code style
+npm run lint              # TypeScript / React
+npm run build             # production assets</code></pre>
+            <p>Tests use Pest with <code>RefreshDatabase</code>. Helpers in
+                <code>tests/Pest.php</code>:</p>
+            <ul>
+                <li><code>userWithCompany('owner')</code> — returns <code>[$user, $company]</code> with a role.</li>
+                <li><code>actingAsCompany($user, $company)</code> — authenticates and sets the active company.</li>
+            </ul>
+            <p><code>tests/Concerns/AssertsTenantIsolation</code> provides
+                <code>assertCrossTenantDenied()</code> used across modules. Two suites guard against
+                regressions the unit tests miss: a per-module feature suite and
+                <code>SmokeTest</code>, which renders every page.</p>
+        </section>
+
+        <section id="conventions">
+            <h2>12. Conventions</h2>
+            <ul>
+                <li><strong>Validation</strong> in Form Requests; <strong>authorization</strong> in
+                    Policies / Gates; <strong>domain logic</strong> in services.</li>
+                <li>Controllers stay thin and return Inertia responses or redirects with a flash
+                    message.</li>
+                <li>Tenant models use <code>BelongsToCompany</code>; financial records are voided with
+                    a reason and audited, never silently hard-deleted.</li>
+                <li>Never trust the client for money — recompute on the server.</li>
+                <li>Comments only where intent is non-obvious; no emojis in UI, logs or messages.</li>
+            </ul>
+        </section>
+
+        <section id="extend">
+            <h2>13. Extending the app</h2>
+            <p>A typical new module:</p>
+            <ol>
+                <li><strong>Migration</strong> with a <code>company_id</code> foreign key.</li>
+                <li><strong>Model</strong> using <code>BelongsToCompany</code> (+ <code>Auditable</code>,
+                    and <code>Voidable</code> for financial records) and a factory.</li>
+                <li><strong>Policy</strong> mapping abilities to roles; register it in
+                    <code>AppServiceProvider</code>.</li>
+                <li><strong>Form Requests</strong> for store/update.</li>
+                <li><strong>Service</strong> for business logic; route any money movement through
+                    <code>LedgerPostingService</code>.</li>
+                <li><strong>Controller</strong> + routes under the <code>company</code> middleware.</li>
+                <li><strong>Inertia pages</strong> in <code>resources/js/pages</code>; reuse
+                    <code>DataTable</code> and <code>FormControls</code>.</li>
+                <li><strong>Tests</strong>: feature tests plus a tenant-isolation case; add the page to
+                    <code>SmokeTest</code>.</li>
+            </ol>
+            <div class="note">
+                <strong>Adding a notification</strong> Add a key to
+                <code>EmailTemplate::KEYS</code> and a default in
+                <code>EmailTemplateService::DEFAULTS</code>, then send via the relevant service.
+            </div>
+        </section>
+
+        <section id="security">
+            <h2>14. Security notes</h2>
+            <ul>
+                <li>Tenant isolation is enforced by global scope + policies, and proven by tests.</li>
+                <li>Uploads are validated by MIME and size and stored on the private disk
+                    (<code>storage/app/private</code>), outside the web root; downloads are authorized.</li>
+                <li>Admin and portal are separate guards; sessions are database-backed and
+                    regenerated on login.</li>
+                <li>Audit logs are immutable.</li>
+                <li>Set <code>APP_DEBUG=false</code> and serve over HTTPS in production.</li>
+            </ul>
+        </section>
+
+        <section id="debug">
+            <h2>15. Debugging</h2>
+            <ul>
+                <li><code>storage/logs/laravel.log</code> — application log (emails go here when the
+                    mailer is <code>log</code>).</li>
+                <li><code>php artisan pail</code> — live tail of logs.</li>
+                <li><code>php artisan queue:failed</code> / <code>queue:retry all</code> — failed jobs.</li>
+                <li><code>php artisan route:list</code> — confirm routes and middleware.</li>
+                <li><code>php artisan tinker</code> — inspect data/services interactively.</li>
+            </ul>
+        </section>
+
+        <div class="footer">
+            <a href="index.html">← Documentation home</a> · Xgenious Accounting Developer Guide
+        </div>
+    </main>
+</div>
+</body>
+</html>

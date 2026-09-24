@@ -14,10 +14,10 @@ beforeEach(function () {
 describe('Admin Authentication', function () {
     test('admin can view login form', function () {
         $response = $this->get(route('admin.login'));
-        
+
         $response->assertStatus(200);
         $response->assertViewIs('admin.auth.login');
-        $response->assertSee('Admin Sign In');
+        $response->assertSee('Sign in to Admin');
     });
 
     test('admin can login with valid credentials', function () {

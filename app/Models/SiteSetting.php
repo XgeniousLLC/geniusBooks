@@ -14,12 +14,12 @@ class SiteSetting extends Model
         'value',
         'type',
         'group',
-        'description'
+        'description',
     ];
 
     public function getValueAttribute($value)
     {
-        return match($this->type) {
+        return match ($this->type) {
             'json' => json_decode($value, true),
             'boolean' => (bool) $value,
             'number' => (int) $value,
@@ -29,17 +29,20 @@ class SiteSetting extends Model
 
     public function setValueAttribute($value)
     {
-        $this->attributes['value'] = match($this->type) {
+        $type = $this->attributes['type'] ?? $this->type ?? 'text';
+
+        $this->attributes['value'] = match ($type) {
             'json' => json_encode($value),
             'boolean' => $value ? '1' : '0',
             'number' => (string) $value,
-            default => (string) $value,
+            default => is_scalar($value) || $value === null ? (string) $value : json_encode($value),
         };
     }
 
     public static function get($key, $default = null)
     {
         $setting = static::where('key', $key)->first();
+
         return $setting ? $setting->value : $default;
     }
 
@@ -48,10 +51,10 @@ class SiteSetting extends Model
         return static::updateOrCreate(
             ['key' => $key],
             [
-                'value' => $value,
                 'type' => $type,
+                'value' => $value,
                 'group' => $group,
-                'description' => $description
+                'description' => $description,
             ]
         );
     }

@@ -135,6 +135,10 @@ BACKUP
 chmod +x "${BACKUP_SCRIPT}"
 (crontab -l 2>/dev/null; echo "0 2 * * * ${BACKUP_SCRIPT}") | crontab -
 
+# ─── Laravel scheduler cron ───────────────────────────────────────────────────
+log "Adding Laravel scheduler cron..."
+(crontab -l 2>/dev/null; echo "* * * * * cd ${APP_DIR} && php artisan schedule:run >> /dev/null 2>&1") | crontab -
+
 log "Installation complete!"
 echo ""
 echo "  URL:            https://${DOMAIN}"

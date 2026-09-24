@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Xgenious Accounting — Documentation</title>
+    <link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<div class="layout">
+    <nav class="toc">
+        <h2>Documentation</h2>
+        <ol>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#user-manual">User Manual</a></li>
+            <li><a href="#developer-guide">Developer Guide</a></li>
+            <li><a href="#deployment-guide">Deployment Guide</a></li>
+            <li><a href="#quick-ref">Quick Reference</a></li>
+        </ol>
+    </nav>
+
+    <main>
+        <div class="hero">
+            <span class="eyebrow">Xgenious Accounting</span>
+            <h1>Documentation</h1>
+            <p>Everything you need to run, use, extend and deploy the accounting platform.</p>
+        </div>
+
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>Xgenious Accounting is a multi-tenant, browser-based accounting and financial
+                management platform. Each business (tenant) gets an isolated workspace covering the
+                full core workflow:</p>
+            <p><strong>Business → Customers → Products/Services → Invoices → Payments → Expenses → Transactions → Reports</strong></p>
+
+            <div class="badges">
+                <span class="badge">Laravel 12</span>
+                <span class="badge">PHP 8.2+</span>
+                <span class="badge">React 19 + Inertia</span>
+                <span class="badge">MySQL / SQLite</span>
+                <span class="badge">Multi-tenant</span>
+                <span class="badge">Queue + Scheduler</span>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h4>User Manual</h4>
+                    <p>How to use every module, from onboarding to reports and settings.</p>
+                    <p><a href="user-manual.html">Open the user manual →</a></p>
+                </div>
+                <div class="card">
+                    <h4>Developer Guide</h4>
+                    <p>Architecture, local setup, the financial engine, testing and conventions.</p>
+                    <p><a href="developer-guide.html">Open the developer guide →</a></p>
+                </div>
+                <div class="card">
+                    <h4>Deployment Guide</h4>
+                    <p>Production setup for VPS, shared hosting, AWS and DigitalOcean.</p>
+                    <p><a href="deployment-guide.html">Open the deployment guide →</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="user-manual">
+            <h2>User Manual</h2>
+            <p>For business owners, accountants and staff using the platform day to day: onboarding,
+                customers, invoices, payments, expenses, accounts, the ledger, reports and settings,
+                with the roles &amp; permissions each user has.</p>
+            <p><a href="user-manual.html">Read the User Manual →</a></p>
+        </section>
+
+        <section id="developer-guide">
+            <h2>Developer Guide</h2>
+            <p>For engineers maintaining or extending the product: the stack, project layout, the
+                money/ledger/calculation engine, tenancy and authorization, background jobs,
+                environment variables and testing.</p>
+            <p><a href="developer-guide.html">Read the Developer Guide →</a></p>
+        </section>
+
+        <section id="deployment-guide">
+            <h2>Deployment Guide</h2>
+            <p>Step-by-step production instructions for a VPS (Ubuntu + Nginx), shared hosting
+                (cPanel), AWS (EC2 + RDS + S3 + SES), and DigitalOcean (Droplet / App Platform +
+                Managed DB + Spaces). Includes SSL, queues, the scheduler, backups and the update
+                procedure.</p>
+            <p><a href="deployment-guide.html">Read the Deployment Guide →</a></p>
+        </section>
+
+        <section id="quick-ref">
+            <h2>Quick Reference</h2>
+            <h3>Demo credentials (after seeding)</h3>
+            <table>
+                <tr><th>Role</th><th>Email</th><th>Password</th></tr>
+                <tr><td>Business owner</td><td><code>demo@&lt;your-host&gt;</code></td><td><code>password</code></td></tr>
+                <tr><td>Accountant</td><td><code>accountant@demo.test</code></td><td><code>password</code></td></tr>
+                <tr><td>Staff</td><td><code>staff@demo.test</code></td><td><code>password</code></td></tr>
+                <tr><td>Platform admin</td><td><code>admin@example.com</code></td><td><code>password</code></td></tr>
+            </table>
+
+            <h3>Key commands</h3>
+            <pre><code>php artisan migrate --force
+php artisan db:seed --class=AdminSeeder
+php artisan db:seed --class=DemoDataSeeder
+php artisan queue:work            # background worker
+php artisan schedule:run          # cron every minute
+php artisan mail:test you@example.com</code></pre>
+
+            <div class="note">
+                <strong>Portals</strong>
+                Accounting portal: <code>/portal/login</code> · Platform admin console:
+                <code>/admin/login</code>
+            </div>
+        </section>
+
+        <div class="footer">
+            Xgenious Accounting documentation. Generated for the current codebase.
+        </div>
+    </main>
+</div>
+</body>
+</html>

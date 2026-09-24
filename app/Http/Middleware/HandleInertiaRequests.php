@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Company;
+use App\Support\CompanyContext;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -35,15 +37,33 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user('web');
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user('web'),
+                'user' => $user,
+                // Resolved lazily: the active company (and its permission team)
+                // is set by route middleware that runs after this one.
+                'roles' => fn () => $user ? $user->getRoleNames()->all() : [],
             ],
+            'currentCompany' => function () {
+                $context = app(CompanyContext::class);
+
+                return $context->has()
+                    ? Company::find($context->id())?->only(['id', 'name', 'slug', 'currency', 'logo_path'])
+                    : null;
+            },
+            'companies' => fn () => $user
+                ? $user->activeCompanies()->orderBy('name')->get(['companies.id', 'companies.name'])
+                : [],
+            'impersonating' => $request->session()->has('impersonator_admin_id'),
+            'demo' => config('accounting.demo'),
             'flash' => [
                 'success' => $request->session()->get('success'),
-                'error'   => $request->session()->get('error'),
-                'status'  => $request->session()->get('status'),
+                'error' => $request->session()->get('error'),
+                'status' => $request->session()->get('status'),
+                'importResult' => $request->session()->get('importResult'),
             ],
         ];
     }
