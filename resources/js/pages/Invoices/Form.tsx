@@ -32,6 +32,8 @@ interface Props {
         discount_value: string | number | null;
         notes: string | null;
         terms: string | null;
+        is_recurring: boolean;
+        recurrence_interval: string | null;
         items: {
             product_id: number | null;
             description: string;
@@ -47,6 +49,7 @@ interface Props {
     currency: string;
     taxInclusive: boolean;
     nextNumber: string;
+    intervals: string[];
     defaults: { issue_date: string; due_date: string };
 }
 
@@ -54,7 +57,7 @@ function blankLine(): LineItem {
     return { product_id: '', description: '', quantity: '1', unit_price: '0.00', discount_type: '', discount_value: '', tax_rate: '' };
 }
 
-export default function InvoiceForm({ invoice, customers, products, currency, taxInclusive, nextNumber, defaults }: Props) {
+export default function InvoiceForm({ invoice, customers, products, currency, taxInclusive, nextNumber, intervals, defaults }: Props) {
     const editing = Boolean(invoice);
 
     const form = useForm({
@@ -65,6 +68,8 @@ export default function InvoiceForm({ invoice, customers, products, currency, ta
         discount_value: invoice?.discount_value != null ? String(invoice.discount_value) : '',
         notes: invoice?.notes ?? '',
         terms: invoice?.terms ?? 'Payment due within 15 days.',
+        is_recurring: invoice?.is_recurring ?? false,
+        recurrence_interval: invoice?.recurrence_interval ?? 'monthly',
         items: (invoice?.items?.map((item) => ({
             product_id: item.product_id ?? '',
             description: item.description,
@@ -247,6 +252,25 @@ export default function InvoiceForm({ invoice, customers, products, currency, ta
                         <Field label="Terms" error={form.errors.terms}>
                             <textarea className={inputClass} rows={2} value={form.data.terms} onChange={(e) => form.setData('terms', e.target.value)} />
                         </Field>
+
+                        <div className="border-t border-slate-100 pt-5 space-y-4">
+                            <label className="flex items-center gap-3 text-sm text-slate-700">
+                                <input
+                                    type="checkbox"
+                                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                    checked={form.data.is_recurring}
+                                    onChange={(e) => form.setData('is_recurring', e.target.checked)}
+                                />
+                                Repeat this invoice automatically (a new draft is created each period)
+                            </label>
+                            {form.data.is_recurring && (
+                                <Field label="Interval" error={form.errors.recurrence_interval}>
+                                    <select className={inputClass} value={form.data.recurrence_interval} onChange={(e) => form.setData('recurrence_interval', e.target.value)}>
+                                        {intervals.map((interval) => <option key={interval} value={interval}>{interval}</option>)}
+                                    </select>
+                                </Field>
+                            )}
+                        </div>
                     </div>
 
                     <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 h-fit">

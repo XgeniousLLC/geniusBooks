@@ -14,3 +14,4 @@ Schedule::command('queue:prune-failed --hours=168')->daily();
 Schedule::command('queue:prune-batches --hours=48')->daily();
 Schedule::command('invoices:send-reminders')->dailyAt('08:00');
 Schedule::command('expenses:generate-recurring')->dailyAt('08:15');
+Schedule::command('invoices:generate-recurring')->dailyAt('08:30');

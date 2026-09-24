@@ -15,6 +15,9 @@ class Invoice extends Model
 {
     use Auditable, BelongsToCompany, HasFactory;
 
+    /** @var list<string> */
+    public const INTERVALS = ['weekly', 'monthly', 'yearly'];
+
     protected $fillable = [
         'company_id',
         'customer_id',
@@ -41,6 +44,11 @@ class Invoice extends Model
         'cancel_reason',
         'due_reminder_sent_at',
         'overdue_reminder_sent_at',
+        'is_recurring',
+        'recurrence_interval',
+        'next_recurrence_on',
+        'last_generated_at',
+        'recurrence_parent_id',
     ];
 
     protected function casts(): array
@@ -62,6 +70,9 @@ class Invoice extends Model
             'cancelled_at' => 'datetime',
             'due_reminder_sent_at' => 'datetime',
             'overdue_reminder_sent_at' => 'datetime',
+            'is_recurring' => 'boolean',
+            'next_recurrence_on' => 'date',
+            'last_generated_at' => 'datetime',
         ];
     }
 
@@ -85,6 +96,26 @@ class Invoice extends Model
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class)->orderBy('position');
+    }
+
+    public function recurrenceParent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'recurrence_parent_id');
+    }
+
+    public function recurrences(): HasMany
+    {
+        return $this->hasMany(self::class, 'recurrence_parent_id');
+    }
+
+    public function scopeRecurring($query)
+    {
+        return $query->where('is_recurring', true)->whereNull('cancelled_at');
+    }
+
+    public function isRecurringTemplate(): bool
+    {
+        return $this->is_recurring && ! $this->isCancelled();
     }
 
     public function status(): InvoiceStatus

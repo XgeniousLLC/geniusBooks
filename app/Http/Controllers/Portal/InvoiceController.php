@@ -90,6 +90,7 @@ class InvoiceController extends Controller
             'currency' => $company->currency,
             'taxInclusive' => (bool) $company->tax_inclusive,
             'nextNumber' => $this->numbers->preview($company, 'invoice'),
+            'intervals' => Invoice::INTERVALS,
             'defaults' => [
                 'issue_date' => $issueDate,
                 'due_date' => now()->addDays($company->default_payment_terms_days)->toDateString(),
@@ -153,6 +154,8 @@ class InvoiceController extends Controller
                 'discount_value' => $invoice->discount_value,
                 'notes' => $invoice->notes,
                 'terms' => $invoice->terms,
+                'is_recurring' => (bool) $invoice->is_recurring,
+                'recurrence_interval' => $invoice->recurrence_interval,
                 'items' => $invoice->items->map(fn ($item) => [
                     'product_id' => $item->product_id,
                     'description' => $item->description,
@@ -168,6 +171,7 @@ class InvoiceController extends Controller
             'currency' => $company->currency,
             'taxInclusive' => (bool) $invoice->tax_inclusive,
             'nextNumber' => $invoice->number,
+            'intervals' => Invoice::INTERVALS,
             'defaults' => [
                 'issue_date' => $invoice->issue_date->toDateString(),
                 'due_date' => $invoice->due_date->toDateString(),
@@ -373,6 +377,9 @@ class InvoiceController extends Controller
             'discount_value' => $invoice->discount_value,
             'notes' => $invoice->notes,
             'terms' => $invoice->terms,
+            'is_recurring' => (bool) $invoice->is_recurring,
+            'recurrence_interval' => $invoice->recurrence_interval,
+            'next_recurrence_on' => $invoice->next_recurrence_on?->toDateString(),
             'subtotal' => (int) $invoice->subtotal,
             'discount_total' => (int) $invoice->discount_total,
             'tax_total' => (int) $invoice->tax_total,

@@ -32,6 +32,8 @@ class StoreInvoiceRequest extends FormRequest
             'discount_value' => ['nullable', 'numeric', 'min:0', 'required_with:discount_type'],
             'notes' => ['nullable', 'string', 'max:5000'],
             'terms' => ['nullable', 'string', 'max:5000'],
+            'is_recurring' => ['boolean'],
+            'recurrence_interval' => ['nullable', Rule::in(Invoice::INTERVALS), 'required_if:is_recurring,true'],
 
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => [
@@ -52,6 +54,7 @@ class StoreInvoiceRequest extends FormRequest
         $this->merge([
             'discount_type' => $this->input('discount_type') ?: null,
             'discount_value' => $this->input('discount_value') === '' ? null : $this->input('discount_value'),
+            'is_recurring' => $this->boolean('is_recurring', false),
         ]);
     }
 }

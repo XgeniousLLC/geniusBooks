@@ -14,6 +14,9 @@ interface Props {
         tax_inclusive: boolean;
         notes: string | null;
         terms: string | null;
+        is_recurring: boolean;
+        recurrence_interval: string | null;
+        next_recurrence_on: string | null;
         balance: number;
         formatted: Record<string, string>;
         customer: {
@@ -68,6 +71,11 @@ export default function InvoiceShow({ invoice, accounts, can }: Props) {
                     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${invoice.status_class}`}>
                         {invoice.status_label}
                     </span>
+                    {invoice.is_recurring && (
+                        <span className="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-600">
+                            Recurring · {invoice.recurrence_interval}
+                        </span>
+                    )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <a href={`/portal/invoices/${invoice.id}/pdf`} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">

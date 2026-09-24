@@ -1468,6 +1468,10 @@ The P0 chain that must work for the Navneet demonstration.
 
 Explicitly out of MVP scope; recorded so scope stays controlled.
 
+**Phase 2 — delivered so far**
+- Recurring invoices (`invoices:generate-recurring` generates draft occurrences from a
+  recurring invoice template).
+
 **Banking & reconciliation**
 - Bank connections, statement import, transaction matching, reconciliation.
 
@@ -1476,7 +1480,7 @@ Explicitly out of MVP scope; recorded so scope stays controlled.
   sheet, accounts payable, budgets, fixed assets, purchase orders.
 
 **Sales & expenses extensions**
-- Quotes, recurring invoices, recurring payments, expense approvals, receipt OCR.
+- Quotes, recurring payments, expense approvals, receipt OCR.
 
 **Automation**
 - Auto reminders beyond MVP, recurring transactions, automatic categorization.
