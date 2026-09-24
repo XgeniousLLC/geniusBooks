@@ -76,6 +76,7 @@ class DocumentNumberService
         return match ($type) {
             'invoice' => $company->invoice_prefix ?: 'INV-',
             'credit_note' => 'CN-',
+            'quote' => 'QT-',
             default => strtoupper(Str::substr($type, 0, 3)).'-',
         };
     }

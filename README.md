@@ -22,6 +22,7 @@ gets an isolated workspace covering the full core workflow:
 ### Sales
 - Customers (CRUD, CSV import, profile, statement, opening balances).
 - Products & services (CRUD, CSV import).
+- Quotes: create, track status, convert to a draft invoice.
 - Invoices: authoritative totals engine (line/invoice discounts, inclusive/exclusive
   tax), status lifecycle, PDF, email delivery, signed public links, reminders,
   duplicate, cancel, and **recurring invoices**.

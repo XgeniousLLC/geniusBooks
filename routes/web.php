@@ -28,6 +28,7 @@ use App\Http\Controllers\Portal\OnboardingController;
 use App\Http\Controllers\Portal\PaymentController;
 use App\Http\Controllers\Portal\ProductController;
 use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
+use App\Http\Controllers\Portal\QuoteController;
 use App\Http\Controllers\Portal\ReportController;
 use App\Http\Controllers\Portal\SearchController;
 use App\Http\Controllers\Portal\SettingsController;
@@ -91,6 +92,19 @@ Route::prefix('portal')->name('portal.')->group(function () {
                 Route::get('/products/import/template', [ImportController::class, 'productsTemplate'])->name('imports.products.template');
                 Route::post('/products/bulk', [ProductController::class, 'bulk'])->name('products.bulk');
                 Route::resource('products', ProductController::class)->except('show');
+
+                // Sales — quotes
+                Route::get('/quotes', [QuoteController::class, 'index'])->name('quotes.index');
+                Route::get('/quotes/create', [QuoteController::class, 'create'])->name('quotes.create');
+                Route::post('/quotes', [QuoteController::class, 'store'])->name('quotes.store');
+                Route::get('/quotes/{quote}', [QuoteController::class, 'show'])->name('quotes.show');
+                Route::get('/quotes/{quote}/edit', [QuoteController::class, 'edit'])->name('quotes.edit');
+                Route::put('/quotes/{quote}', [QuoteController::class, 'update'])->name('quotes.update');
+                Route::delete('/quotes/{quote}', [QuoteController::class, 'destroy'])->name('quotes.destroy');
+                Route::post('/quotes/{quote}/send', [QuoteController::class, 'markSent'])->name('quotes.send');
+                Route::post('/quotes/{quote}/accept', [QuoteController::class, 'accept'])->name('quotes.accept');
+                Route::post('/quotes/{quote}/decline', [QuoteController::class, 'decline'])->name('quotes.decline');
+                Route::post('/quotes/{quote}/convert', [QuoteController::class, 'convert'])->name('quotes.convert');
 
                 // Sales — invoices
                 Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');

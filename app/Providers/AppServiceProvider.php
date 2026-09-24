@@ -15,6 +15,7 @@ use App\Models\Invoice;
 use App\Models\LedgerAccount;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\Quote;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Vendor;
@@ -29,6 +30,7 @@ use App\Policies\InvoicePolicy;
 use App\Policies\LedgerAccountPolicy;
 use App\Policies\PaymentPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\QuotePolicy;
 use App\Policies\TransactionPolicy;
 use App\Policies\VendorPolicy;
 use App\Support\CompanyContext;
@@ -75,5 +77,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ExpenseCategory::class, ExpenseCategoryPolicy::class);
         Gate::policy(LedgerAccount::class, LedgerAccountPolicy::class);
         Gate::policy(Transaction::class, TransactionPolicy::class);
+        Gate::policy(Quote::class, QuotePolicy::class);
     }
 }

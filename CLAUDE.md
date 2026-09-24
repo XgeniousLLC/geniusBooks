@@ -2,7 +2,7 @@
 
 Multi-tenant, browser-based accounting and financial management SaaS. Each business
 (tenant) gets an isolated workspace covering: **Business → Customers → Products →
-Invoices → Payments → Expenses → Transactions → Reports**.
+Quotes → Invoices → Payments → Expenses → Transactions → Reports**.
 
 ## Interfaces
 

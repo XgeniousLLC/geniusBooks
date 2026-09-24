@@ -48,6 +48,12 @@ const NAV_GROUPS: NavGroup[] = [
                 match: (p) => p.startsWith('/portal/invoices'),
             },
             {
+                label: 'Quotes',
+                href: '/portal/quotes',
+                roles: ['owner', 'accountant', 'staff'],
+                match: (p) => p.startsWith('/portal/quotes'),
+            },
+            {
                 label: 'Payments',
                 href: '/portal/payments',
                 roles: ['owner', 'accountant', 'staff'],

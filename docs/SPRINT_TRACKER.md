@@ -1475,6 +1475,8 @@ Explicitly out of MVP scope; recorded so scope stays controlled.
   invoice + reminder SMS, test send).
 - Online payments with Stripe (per-company settings, public invoice "Pay now" checkout,
   signed webhook that records the payment idempotently).
+- Quotes (create/list/show, status lifecycle, and one-click conversion to a draft
+  invoice).
 
 **Banking & reconciliation**
 - Bank connections, statement import, transaction matching, reconciliation.
@@ -1484,7 +1486,7 @@ Explicitly out of MVP scope; recorded so scope stays controlled.
   sheet, accounts payable, budgets, fixed assets, purchase orders.
 
 **Sales & expenses extensions**
-- Quotes, recurring payments, expense approvals, receipt OCR.
+- Recurring payments, expense approvals, receipt OCR.
 
 **Automation**
 - Auto reminders beyond MVP, recurring transactions, automatic categorization.

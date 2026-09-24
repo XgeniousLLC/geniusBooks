@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\LedgerAccount;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\Quote;
 use App\Models\Vendor;
 
 /**
@@ -26,6 +27,7 @@ it('renders every portal page without server errors', function () {
 
     $sent = Invoice::factory()->for($company)->for($customer)->sent()->create(['total' => 10000, 'subtotal' => 10000]);
     $draft = Invoice::factory()->for($company)->for($customer)->create();
+    $quote = Quote::factory()->for($company)->for($customer)->create();
     $payment = Payment::factory()->for($company)->for($customer)->create();
     $expense = Expense::factory()->for($company)->create(['vendor_id' => $vendor->id, 'expense_category_id' => $category->id]);
     $ledger = LedgerAccount::factory()->for($company)->create();
@@ -37,6 +39,7 @@ it('renders every portal page without server errors', function () {
         '/portal/customers', '/portal/customers/create', "/portal/customers/{$customer->id}", "/portal/customers/{$customer->id}/edit", '/portal/customers/import',
         '/portal/products', '/portal/products/create', "/portal/products/{$product->id}/edit", '/portal/products/import',
         '/portal/invoices', '/portal/invoices/create', "/portal/invoices/{$sent->id}", "/portal/invoices/{$draft->id}/edit", "/portal/invoices/{$sent->id}/pdf",
+        '/portal/quotes', '/portal/quotes/create', "/portal/quotes/{$quote->id}", "/portal/quotes/{$quote->id}/edit",
         '/portal/payments', '/portal/payments/create', "/portal/payments/{$payment->id}",
         '/portal/credit-notes',
         '/portal/expenses', '/portal/expenses/create', "/portal/expenses/{$expense->id}", "/portal/expenses/{$expense->id}/edit", '/portal/expenses/categories',

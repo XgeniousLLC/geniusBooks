@@ -9,6 +9,7 @@ use App\Models\Invoice;
 use App\Models\LedgerAccount;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\Quote;
 use App\Models\Transaction;
 use App\Models\Vendor;
 use Tests\Concerns\AssertsTenantIsolation;
@@ -125,4 +126,14 @@ it('blocks cross-tenant ledger access', function () {
 
     $this->assertCrossTenantDenied($ownerA, $companyA, 'GET', "/portal/chart-of-accounts/{$ledgerB->id}/edit");
     $this->assertCrossTenantDenied($ownerA, $companyA, 'POST', "/portal/transactions/{$transactionB->id}/reverse", ['reason' => 'x']);
+});
+
+it('blocks cross-tenant quote access', function () {
+    [$ownerA, $companyA] = userWithCompany('owner');
+
+    $companyB = Company::factory()->create();
+    $quoteB = Quote::factory()->for($companyB)->create();
+
+    $this->assertCrossTenantDenied($ownerA, $companyA, 'GET', "/portal/quotes/{$quoteB->id}");
+    $this->assertCrossTenantDenied($ownerA, $companyA, 'POST', "/portal/quotes/{$quoteB->id}/convert");
 });
