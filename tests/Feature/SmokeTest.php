@@ -44,7 +44,7 @@ it('renders every portal page without server errors', function () {
         '/portal/credit-notes',
         '/portal/expenses', '/portal/expenses/create', "/portal/expenses/{$expense->id}", "/portal/expenses/{$expense->id}/edit", '/portal/expenses/categories',
         '/portal/vendors', '/portal/vendors/create', "/portal/vendors/{$vendor->id}/edit",
-        '/portal/accounts', '/portal/accounts/create', "/portal/accounts/{$account->id}", "/portal/accounts/{$account->id}/edit",
+        '/portal/accounts', '/portal/accounts/create', "/portal/accounts/{$account->id}", "/portal/accounts/{$account->id}/edit", "/portal/accounts/{$account->id}/reconcile",
         '/portal/chart-of-accounts', '/portal/chart-of-accounts/create', "/portal/chart-of-accounts/{$ledger->id}/edit",
         '/portal/transactions', '/portal/transactions/create',
         '/portal/reports', '/portal/reports/profit-and-loss', '/portal/reports/income', '/portal/reports/expenses',

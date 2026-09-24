@@ -39,6 +39,9 @@ export default function AccountShow({ account, transactions, can }: Props) {
                     <p className="text-sm text-slate-500 mt-0.5 capitalize">{account.type} · {account.currency}</p>
                 </div>
                 <div className="flex gap-2">
+                    <Link href={`/portal/accounts/${account.id}/reconcile`} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                        Reconcile
+                    </Link>
                     {can.update && (
                         <Link href={`/portal/accounts/${account.id}/edit`} className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
                             Edit

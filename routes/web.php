@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Portal\AuthController as PortalAuthController;
 use App\Http\Controllers\Portal\BankAccountController;
+use App\Http\Controllers\Portal\BankReconciliationController;
 use App\Http\Controllers\Portal\ChartOfAccountsController;
 use App\Http\Controllers\Portal\CompanySwitchController;
 use App\Http\Controllers\Portal\CreditNoteController;
@@ -141,6 +142,15 @@ Route::prefix('portal')->name('portal.')->group(function () {
 
                 // Accounting — accounts
                 Route::resource('accounts', BankAccountController::class);
+
+                // Accounting — bank reconciliation
+                Route::get('/accounts/{account}/reconcile', [BankReconciliationController::class, 'index'])->name('accounts.reconcile');
+                Route::post('/accounts/{account}/reconcile/import', [BankReconciliationController::class, 'import'])->name('accounts.reconcile.import');
+                Route::post('/accounts/{account}/reconcile/auto-match', [BankReconciliationController::class, 'autoMatch'])->name('accounts.reconcile.auto');
+                Route::post('/accounts/{account}/reconcile/{line}/match', [BankReconciliationController::class, 'match'])->name('accounts.reconcile.match');
+                Route::post('/accounts/{account}/reconcile/{line}/unmatch', [BankReconciliationController::class, 'unmatch'])->name('accounts.reconcile.unmatch');
+                Route::post('/accounts/{account}/reconcile/{line}/create-transaction', [BankReconciliationController::class, 'createTransaction'])->name('accounts.reconcile.create');
+                Route::post('/accounts/{account}/reconcile/{line}/reconcile', [BankReconciliationController::class, 'reconcile'])->name('accounts.reconcile.toggle');
 
                 // Expenses
                 Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');

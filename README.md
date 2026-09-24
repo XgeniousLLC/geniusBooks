@@ -33,6 +33,7 @@ gets an isolated workspace covering the full core workflow:
 ### Money & accounting
 - Single-entry transaction ledger (posting service, transfers, reversals).
 - Bank/cash accounts with derived balances and running history.
+- Bank statement import and reconciliation (auto-match, manual match, create from line).
 - Chart of accounts (Assets/Liabilities/Equity/Revenue/Expenses).
 - Expenses with categories, vendors, attachments, recurrence, and ledger posting.
 

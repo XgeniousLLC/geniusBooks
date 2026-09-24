@@ -1477,9 +1477,12 @@ Explicitly out of MVP scope; recorded so scope stays controlled.
   signed webhook that records the payment idempotently).
 - Quotes (create/list/show, status lifecycle, and one-click conversion to a draft
   invoice).
+- Bank statement import & reconciliation (CSV import into an account, auto-match to
+  ledger transactions, manual match/unmatch, create a transaction from a line, and
+  reconcile toggling).
 
 **Banking & reconciliation**
-- Bank connections, statement import, transaction matching, reconciliation.
+- Live bank connections (open banking APIs).
 
 **Advanced accounting**
 - Double-entry journal UI, journal entries, general ledger, trial balance, balance

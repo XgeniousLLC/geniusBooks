@@ -41,6 +41,7 @@ export interface PageProps {
         error?: string;
         status?: string;
         importResult?: ImportResult | null;
+        importErrors?: { row: number; message: string }[] | null;
     };
     errors?: Record<string, string>;
 }
