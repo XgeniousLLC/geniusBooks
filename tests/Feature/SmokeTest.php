@@ -49,6 +49,8 @@ it('renders every portal page without server errors', function () {
         '/portal/transactions', '/portal/transactions/create',
         '/portal/reports', '/portal/reports/profit-and-loss', '/portal/reports/income', '/portal/reports/expenses',
         '/portal/reports/receivables', '/portal/reports/tax-summary', "/portal/reports/customers/{$customer->id}/statement",
+        "/portal/reports/general-ledger?account_type=bank&account_id={$account->id}",
+        "/portal/reports/general-ledger?account_type=ledger&account_id={$ledger->id}",
         '/portal/settings/business', '/portal/settings/invoices', '/portal/settings/tax', '/portal/settings/email', '/portal/settings/payments', '/portal/settings/users',
         '/portal/search?q=acme',
         '/portal/profile',
@@ -65,7 +67,7 @@ it('renders every portal page for an accountant', function () {
 
     actingAsCompany($accountant, $company);
 
-    foreach (['/portal', '/portal/customers', '/portal/invoices', '/portal/payments', '/portal/expenses', '/portal/reports', '/portal/chart-of-accounts', '/portal/transactions'] as $url) {
+    foreach (['/portal', '/portal/customers', '/portal/invoices', '/portal/payments', '/portal/expenses', '/portal/reports', '/portal/chart-of-accounts', '/portal/transactions', '/portal/reports/general-ledger'] as $url) {
         $this->get($url)->assertSuccessful();
     }
 });

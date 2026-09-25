@@ -12,7 +12,7 @@ Quotes → Invoices → Payments → Expenses → Transactions → Reports**.
 
 ## Stack
 
-- **Backend**: Laravel 12 (PHP 8.2+), Eloquent, Form Requests, Policies
+- **Backend**: Laravel 13 (PHP 8.4+), Eloquent, Form Requests, Policies
 - **Portal UI**: React 19 + TypeScript + Inertia + Vite + Tailwind CSS 4
 - **Admin UI**: Laravel Blade + Alpine.js
 - **Database**: MySQL (production) / SQLite (local default)

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Xgenious Accounting — API Documentation</title>
+    <link rel="stylesheet" href="assets/docs.css">
+    <style>
+        code { background: #f1f5f9; padding: 0.1em 0.3em; border-radius: 4px; }
+        pre { background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 8px; overflow:auto; font-size: 0.85em; }
+        pre code { background: transparent; color: inherit; padding: 0; }
+        table { width:100%; border-collapse: collapse; }
+        th,td { border:1px solid #e2e8f0; padding: 8px 10px; text-align:left; }
+        th { background:#f8fafc; }
+        .badge-api { background:#4f46e5; color:white; padding:2px 8px; border-radius:999px; font-size:0.7em; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <nav class="toc">
+        <h2>API Documentation</h2>
+        <ol>
+            <li><a href="#overview">1. Overview</a></li>
+            <li><a href="#auth">2. Authentication</a></li>
+            <li><a href="#conventions">3. Conventions</a></li>
+            <li><a href="#endpoints">4. Endpoints</a></li>
+            <li><a href="#customers">5. Customers</a></li>
+            <li><a href="#products">6. Products</a></li>
+            <li><a href="#quotes">7. Quotes</a></li>
+            <li><a href="#invoices">8. Invoices</a></li>
+            <li><a href="#payments">9. Payments</a></li>
+            <li><a href="#expenses">10. Expenses & Vendors</a></li>
+            <li><a href="#transactions">11. Transactions</a></li>
+            <li><a href="#integrations">12. Finance integrations</a></li>
+            <li><a href="#errors">13. Errors & rate limit</a></li>
+            <li><a href="#testcases">14. Test cases</a></li>
+            <li><a href="#examples">15. Examples</a></li>
+        </ol>
+    </nav>
+    <main>
+        <div class="hero">
+            <a class="back" href="index.html">← Documentation home</a>
+            <span class="eyebrow">Developer</span>
+            <h1>API Documentation <span class="badge-api">v1</span></h1>
+            <p>Base URL <code>/api/v1</code> — Bearer token, company-scoped, JSON only. Create a token at <em>Portal → Settings → API applications</em>.</p>
+        </div>
+
+        <section id="overview">
+            <h2>1. Overview</h2>
+            <p>The API exposes the same ledger-backed engine as the portal. Every request is scoped to the <strong>company</strong> that owns the Bearer token. Creating, syncing or voiding through the API writes the same transactions and audit logs as the UI.</p>
+            <ul>
+                <li>Auth: <code>Authorization: Bearer gb_&lt;60-char&gt;</code></li>
+                <li>Content-Type: <code>application/json</code> — Accept: <code>application/json</code></li>
+                <li>Pagination: <code>?page=1&per_page=15</code> (max 100)</li>
+                <li>Health: <code>GET /up</code></li>
+            </ul>
+        </section>
+
+        <section id="auth">
+            <h2>2. Authentication — API applications</h2>
+            <p><strong>Portal → Settings → API applications</strong> (owner only). Click <em>Create application</em>, enter a name and optional expiry, and copy the token once. The token is stored hashed (SHA-256) and shown only once.</p>
+            <pre><code>curl -H "Authorization: Bearer gb_abc..." https://app.example.com/api/v1/me
+# 200 { "company_id": 1, "application": "Zapier" }
+# 401 { "message": "Unauthenticated. Invalid API token." }</code></pre>
+            <ul>
+                <li>Tokens are <strong>company-scoped</strong> — they cannot read or write another company even if the ID is guessed.</li>
+                <li>Expired tokens return 401. Revoked (deleted) tokens return 401.</li>
+                <li><code>last_used_at</code> is updated on every authenticated request.</li>
+            </ul>
+        </section>
+
+        <section id="conventions">
+            <h2>3. Conventions</h2>
+            <table>
+                <tr><th>Topic</th><th>Rule</th></tr>
+                <tr><td>Amounts</td><td>Integers in <strong>minor units</strong> (cents). Invoices item <code>unit_price</code> accepts decimal string (<code>"50.00"</code>) — converted via <code>Money</code> to cents.</td></tr>
+                <tr><td>Dates</td><td>ISO-8601 <code>YYYY-MM-DD</code></td></tr>
+                <tr><td>Pagination</td><td>Laravel paginator: <code>data</code>, <code>current_page</code>, <code>last_page</code>, <code>total</code></td></tr>
+                <tr><td>Validation</td><td>422 with <code>errors</code> object</td></tr>
+                <tr><td>Tenant isolation</td><td>Global scope on <code>company_id</code> via <code>CompanyContext</code> set by <code>AuthenticateApiApplication</code></td></tr>
+            </table>
+        </section>
+
+        <section id="endpoints">
+            <h2>4. Endpoints summary</h2>
+            <table>
+                <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+                <tr><td>GET</td><td>/api/v1/me</td><td>Token info (company, app name)</td></tr>
+                <tr><td>GET/POST</td><td>/api/v1/customers, /api/v1/customers/{id}</td><td>List/create/show/update/delete customers</td></tr>
+                <tr><td>GET/POST</td><td>/api/v1/products, /api/v1/products/{id}</td><td>Products & services</td></tr>
+                <tr><td>GET/POST</td><td>/api/v1/quotes</td><td>Quotes/estimates</td></tr>
+                <tr><td>GET/POST</td><td>/api/v1/invoices, /api/v1/invoices/{id}</td><td>Invoices (draft-editable only)</td></tr>
+                <tr><td>GET/POST</td><td>/api/v1/payments, /api/v1/payments/{id}/void</td><td>Payments + void</td></tr>
+                <tr><td>GET/POST</td><td>/api/v1/expenses, /api/v1/expenses/{id}/void</td><td>Expenses + void</td></tr>
+                <tr><td>GET/POST</td><td>/api/v1/vendors</td><td>Vendors</td></tr>
+                <tr><td>GET/POST</td><td>/api/v1/transactions, /transfer, /income, /adjustment</td><td>Ledger</td></tr>
+            </table>
+        </section>
+
+        <section id="customers">
+            <h2>5. Customers</h2>
+            <pre><code>GET /api/v1/customers?search=acme&per_page=15
+POST /api/v1/customers { "name":"Acme Corp","email":"acme@example.com" }
+GET /api/v1/customers/{id}
+PUT /api/v1/customers/{id}
+DELETE /api/v1/customers/{id}  # soft delete</code></pre>
+            <p>Fields: <code>name*</code>, <code>email</code>, <code>phone</code>, <code>company_name</code>, <code>tax_id</code>, <code>billing_address</code>, <code>shipping_address</code></p>
+        </section>
+
+        <section id="products">
+            <h2>6. Products & Services</h2>
+            <pre><code>POST /api/v1/products { "name":"Widget","type":"product","unit_price":1000,"tax_rate":5 }</code></pre>
+            <p>Types: <code>product</code> | <code>service</code>. <code>unit_price</code> is minor units.</p>
+        </section>
+
+        <section id="quotes">
+            <h2>7. Quotes</h2>
+            <pre><code>POST /api/v1/quotes {
+  "customer_id":1, "issue_date":"2026-09-25", "expiry_date":"2026-10-25",
+  "items":[{"description":"Service","quantity":2,"unit_price":"50.00"}]
+}</code></pre>
+        </section>
+
+        <section id="invoices">
+            <h2>8. Invoices</h2>
+            <pre><code>POST /api/v1/invoices {
+  "customer_id":1, "issue_date":"2026-09-25", "due_date":"2026-10-02",
+  "discount_type":"percent","discount_value":10,
+  "items":[
+    {"description":"Design","quantity":1,"unit_price":"500.00","tax_rate":10},
+    {"product_id":3,"description":"Hosting","quantity":2,"unit_price":"50.00"}
+  ]
+}</code></pre>
+            <p>Invoices use <code>InvoiceService</code> + <code>InvoiceCalculator</code> — line subtotal → line discount → invoice discount → tax (inclusive/exclusive per company). Only <code>draft</code> invoices are update/delete-able.</p>
+            <pre><code>PUT /api/v1/invoices/{id}  # draft only
+DELETE /api/v1/invoices/{id} # draft only -> 422 otherwise</code></pre>
+        </section>
+
+        <section id="payments">
+            <h2>9. Payments</h2>
+            <pre><code>POST /api/v1/payments {
+  "customer_id":1,"bank_account_id":2,"amount":5000,"payment_date":"2026-09-25",
+  "method":"bank_transfer",
+  "allocations":[{"invoice_id":10,"amount":5000}]
+}
+POST /api/v1/payments/{id}/void { "reason":"Duplicate" }</code></pre>
+            <p>Unallocated amount becomes customer credit. Void reverses ledger via <code>LedgerPostingService::reverse</code>.</p>
+        </section>
+
+        <section id="expenses">
+            <h2>10. Expenses & Vendors</h2>
+            <pre><code>POST /api/v1/vendors { "name":"Acme Supplies" }
+POST /api/v1/expenses {
+  "expense_category_id":1,"bank_account_id":1,"amount":2500,
+  "date":"2026-09-25","description":"Office supplies"
+}
+POST /api/v1/expenses/{id}/void { "reason":"Wrong amount" }</code></pre>
+        </section>
+
+        <section id="transactions">
+            <h2>11. Transactions (ledger)</h2>
+            <pre><code>GET /api/v1/transactions?type=transfer
+POST /api/v1/transactions/transfer { "from_account_id":1,"to_account_id":2,"amount":2000,"date":"2026-09-25" }
+POST /api/v1/transactions/income { "bank_account_id":1,"ledger_account_id":5,"amount":10000,"date":"2026-09-25" }
+POST /api/v1/transactions/adjustment { "bank_account_id":1,"amount":-500,"date":"2026-09-25","description":"Correction" }</code></pre>
+            <p>All writes go through <code>LedgerPostingService</code> — the single ledger writer.</p>
+        </section>
+
+        <section id="integrations">
+            <h2>12. Finance SaaS integrations — two-way sync (10 providers)</h2>
+            <p>Portal → <strong>Settings → Integrations</strong> (owner only). Each provider is managed as an <code>Integration</code> row (<code>company_id</code> + <code>provider</code> unique). Two-way sync means <em>push</em> (local → provider) and <em>pull</em> (provider → local).</p>
+            <table>
+                <tr><th>#</th><th>Provider</th><th>Label</th><th>API base</th><th>Docs</th></tr>
+                <tr><td>1</td><td><code>xero</code></td><td>Xero</td><td>https://api.xero.com/api.xro/2.0</td><td><a href="https://developer.xero.com/documentation/">docs</a></td></tr>
+                <tr><td>2</td><td><code>quickbooks</code></td><td>QuickBooks Online</td><td>https://quickbooks.api.intuit.com/v3</td><td><a href="https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities">docs</a></td></tr>
+                <tr><td>3</td><td><code>freshbooks</code></td><td>FreshBooks</td><td>https://api.freshbooks.com</td><td><a href="https://www.freshbooks.com/api">docs</a></td></tr>
+                <tr><td>4</td><td><code>hubspot</code></td><td>HubSpot</td><td>https://api.hubapi.com</td><td><a href="https://developers.hubspot.com/docs/api/overview">docs</a></td></tr>
+                <tr><td>5</td><td><code>zoho_books</code></td><td>Zoho Books</td><td>https://www.zohoapis.com/books/v3</td><td><a href="https://www.zoho.com/books/api/v3/">docs</a></td></tr>
+                <tr><td>6</td><td><code>wave</code></td><td>Wave</td><td>https://gql.waveapps.com/graphql/public</td><td><a href="https://developer.waveapps.com/hc/en-us">docs</a></td></tr>
+                <tr><td>7</td><td><code>sage</code></td><td>Sage Business Cloud</td><td>https://api.sage.com</td><td><a href="https://developer.sage.com/api/">docs</a></td></tr>
+                <tr><td>8</td><td><code>netsuite</code></td><td>Oracle NetSuite</td><td>https://{accountId}.suitetalk.api.netsuite.com/services/rest</td><td><a href="https://docs.oracle.com/en/cloud/saas/netsuite/">docs</a></td></tr>
+                <tr><td>9</td><td><code>myob</code></td><td>MYOB</td><td>https://api.myob.com/accountright</td><td><a href="https://developer.myob.com/api/">docs</a></td></tr>
+                <tr><td>10</td><td><code>kashoo</code></td><td>Kashoo</td><td>https://api.kashoo.com</td><td><a href="https://www.kashoo.com/api/">docs</a></td></tr>
+            </table>
+            <h3>Connect</h3>
+            <pre><code>POST /portal/settings/integrations { "provider":"xero","access_token":"...","refresh_token":"...","external_id":"org_123" }</code></pre>
+            <h3>Sync</h3>
+            <pre><code>POST /portal/settings/integrations/{id}/sync { "entity_type":"customer","entity_id":12,"direction":"push" }
+POST /portal/settings/integrations/{id}/sync { "entity_type":"customer","entity_id":12,"direction":"pull" }
+GET  /portal/settings/integrations/{id}/logs  # last 50 SyncLogs</code></pre>
+            <p><code>SyncService::push</code> formats the local entity for the provider, simulates <code>Http::post(provider.apiBaseUrl())</code>, stores an <code>integration_sync_logs</code> row and flips <code>status</code> to <code>connected</code>/<code>error</code>. <code>pull</code> fetches remote and upserts locally (e.g. customer). Replace the stubbed <code>fetchFromProvider</code>/<code>formatForProvider</code> with real HTTP per provider when credentials are available.</p>
+            <p>All syncs are company-scoped — pushing entity <code>#5</code> from company A cannot read company B's row (verified by test <em>sync isolates by company</em>).</p>
+        </section>
+
+        <section id="errors">
+            <h2>13. Errors & rate limiting</h2>
+            <pre><code>401 { "message": "Unauthenticated. Invalid API token." }
+422 { "message": "The given data was invalid.", "errors": { "name": ["..."] } }
+403 Forbidden (portal gates)
+429 Too Many Requests (throttle)</code></pre>
+            <p>API routes are throttled by Laravel's <code>api</code> limiter. Portal routes use <code>customer</code> + <code>company</code> middleware and <code>Permission::ManageCompany</code> for API app / integration management.</p>
+        </section>
+
+        <section id="testcases">
+            <h2>14. Test cases</h2>
+            <p>Feature tests in <code>tests/Feature/ApiApplicationTest.php</code>, <code>ApiEndpointTest.php</code>, <code>IntegrationTest.php</code> — run via <code>php artisan test</code>.</p>
+            <table>
+                <tr><th>Test</th><th>What it proves</th><th>File</th></tr>
+                <tr><td>owner can create and revoke an API application</td><td>Token generated with <code>gb_</code> prefix, hash stored, revoke deletes</td><td>ApiApplicationTest</td></tr>
+                <tr><td>staff cannot manage API applications</td><td>403 via Gate</td><td>ApiApplicationTest</td></tr>
+                <tr><td>API token authenticates and scopes to company</td><td>401 without/bad/expired, 200 with good token, <code>/me</code></td><td>ApiApplicationTest</td></tr>
+                <tr><td>API token cannot access another company</td><td>Tenant isolation via <code>CompanyContext</code></td><td>ApiApplicationTest</td></tr>
+                <tr><td>can CRUD customers via API</td><td>POST/GET/PUT/DELETE + search/pagination</td><td>ApiEndpointTest</td></tr>
+                <tr><td>can CRUD products via API</td><td>Product create/show</td><td>ApiEndpointTest</td></tr>
+                <tr><td>can create invoice via API with calculator</td><td><code>InvoiceService</code> totals = 10000 cents</td><td>ApiEndpointTest</td></tr>
+                <tr><td>validates invoice payload</td><td>422 on missing <code>customer_id</code>/<code>items</code></td><td>ApiEndpointTest</td></tr>
+                <tr><td>can record payment and transfer via API</td><td>Payment + ledger transfer both via services</td><td>ApiEndpointTest</td></tr>
+                <tr><td>expenses API creates and voids</td><td>Expense record + void reversal</td><td>ApiEndpointTest</td></tr>
+                <tr><td>owner can connect and disconnect integrations</td><td>Xero connect, update, disconnect</td><td>IntegrationTest</td></tr>
+                <tr><td>staff cannot manage integrations</td><td>403</td><td>IntegrationTest</td></tr>
+                <tr><td>all ten providers are available</td><td>Count 10, labels, base URLs, two-way flag</td><td>IntegrationTest</td></tr>
+                <tr><td>sync service pushes and pulls with logs</td><td>Push/pull create <code>integration_sync_logs</code>, update <code>last_sync_at</code></td><td>IntegrationTest</td></tr>
+                <tr><td>sync isolates by company</td><td>Pushing other company's entity fails</td><td>IntegrationTest</td></tr>
+                <tr><td>logs endpoint returns JSON</td><td>GET logs 200</td><td>IntegrationTest</td></tr>
+            </table>
+            <pre><code>php artisan test --filter=Api
+php artisan test --filter=Integration
+php artisan test  # all 368 + new tests</code></pre>
+        </section>
+
+        <section id="examples">
+            <h2>15. Examples (curl)</h2>
+            <pre><code># Create customer
+curl -H "Authorization: Bearer gb_xxx" -H "Content-Type: application/json" \
+  -d '{"name":"Acme","email":"acme@example.com"}' https://app.example.com/api/v1/customers
+
+# List invoices
+curl -H "Authorization: Bearer gb_xxx" "https://app.example.com/api/v1/invoices?page=1&per_page=20"
+
+# Create invoice with tax
+curl -H "Authorization: Bearer gb_xxx" -H "Content-Type: application/json" -d '{
+  "customer_id":1,"issue_date":"2026-09-25","due_date":"2026-10-02",
+  "items":[{"description":"Consulting","quantity":10,"unit_price":"75.00","tax_rate":10}]
+}' https://app.example.com/api/v1/invoices
+
+# Void payment
+curl -X POST -H "Authorization: Bearer gb_xxx" -H "Content-Type: application/json" \
+  -d '{"reason":"Duplicate entry"}' https://app.example.com/api/v1/payments/5/void
+</code></pre>
+        </section>
+
+        <div class="footer">
+            <a href="index.html">← Documentation home</a> · Xgenious Accounting API Documentation
+        </div>
+    </main>
+</div>
+</body>
+</html>

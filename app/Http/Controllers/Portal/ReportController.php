@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -34,6 +35,7 @@ class ReportController extends Controller
                 ['key' => 'expenses', 'title' => 'Expenses', 'description' => 'Spending by category and vendor.'],
                 ['key' => 'receivables', 'title' => 'Receivables', 'description' => 'Outstanding invoices and aging.'],
                 ['key' => 'tax-summary', 'title' => 'Tax Summary', 'description' => 'Tax collected, paid and taxable sales.'],
+                ['key' => 'general-ledger', 'title' => 'General Ledger', 'description' => 'Dated entries and balances for any account.'],
             ],
         ]);
     }
@@ -61,6 +63,69 @@ class ReportController extends Controller
     public function taxSummary(Request $request): Response|HttpResponse|StreamedResponse
     {
         return $this->render($request, 'tax-summary');
+    }
+
+    public function generalLedger(Request $request): Response|HttpResponse|StreamedResponse
+    {
+        Gate::authorize(Permission::ViewReports);
+
+        $filters = $request->validate([
+            'account_type' => ['sometimes', Rule::in(['bank', 'ledger'])],
+            'account_id' => ['nullable', 'integer', 'min:1'],
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from'],
+            'format' => ['nullable', Rule::in(['csv', 'pdf'])],
+        ]);
+
+        $company = $this->company();
+        $from = isset($filters['from'])
+            ? Carbon::parse($filters['from'])->startOfDay()
+            : FinancialYear::start($company);
+        $to = isset($filters['to'])
+            ? Carbon::parse($filters['to'])->endOfDay()
+            : now()->endOfDay();
+
+        $accountType = $filters['account_type'] ?? 'bank';
+        $accountId = (int) ($filters['account_id'] ?? 0);
+
+        $props = [
+            'accounts' => \App\Models\BankAccount::query()->orderBy('name')->get(['id', 'name']),
+            'ledgerAccounts' => \App\Models\LedgerAccount::query()->orderBy('code')->get(['id', 'code', 'name']),
+            'selected' => ['account_type' => $accountType, 'account_id' => $accountId ?: null],
+            'period' => ['from' => $from->toDateString(), 'to' => $to->toDateString()],
+        ];
+
+        if (! $accountId) {
+            return Inertia::render('Reports/GeneralLedger', $props + ['ledger' => null]);
+        }
+
+        $ledger = $this->reports->generalLedger($company, $accountType, $accountId, $from, $to);
+
+        if ($request->filled('format')) {
+            $normalized = [
+                'key' => 'general-ledger',
+                'title' => $ledger['title'],
+                'period' => $ledger['period'],
+                'summary' => [
+                    ['label' => 'Opening balance', 'value' => 0, 'display' => $ledger['opening_display'], 'emphasis' => false],
+                    ['label' => 'Closing balance', 'value' => 0, 'display' => $ledger['closing_display'], 'emphasis' => true],
+                ],
+                'sections' => [[
+                    'heading' => 'Entries',
+                    'rows' => array_map(fn (array $row) => [
+                        'label' => $row['date'].' · '.$row['description'],
+                        'value' => 0,
+                        'display' => $row['debit_display'] ?: ('-'.$row['credit_display']),
+                    ], $ledger['rows']),
+                    'total' => 0,
+                    'total_display' => $ledger['closing_display'],
+                ]],
+            ];
+
+            return $this->respond($request, $normalized, 'general-ledger');
+        }
+
+        return Inertia::render('Reports/GeneralLedger', $props + ['ledger' => $ledger]);
     }
 
     public function statement(Request $request, Customer $customer): Response|HttpResponse|StreamedResponse

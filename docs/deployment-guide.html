@@ -36,7 +36,7 @@
             <h2>1. Before you deploy</h2>
             <h3>Server requirements</h3>
             <ul>
-                <li><strong>PHP 8.2+</strong> with: <code>mbstring</code>, <code>xml</code>/<code>dom</code>,
+                <li><strong>PHP 8.4+</strong> with: <code>mbstring</code>, <code>xml</code>/<code>dom</code>,
                     <code>curl</code>, <code>zip</code>, <code>bcmath</code>, <code>intl</code>,
                     <code>gd</code>, and <code>pdo_mysql</code> (or <code>pdo_sqlite</code>).</li>
                 <li><strong>Composer 2</strong> and <strong>Node.js 20+</strong> (build step only).</li>
@@ -115,8 +115,8 @@ php artisan storage:link</code></pre>
             <h3>2.1 Install packages</h3>
             <pre><code>sudo apt update
 sudo apt install -y nginx mysql-server unzip git supervisor certbot python3-certbot-nginx \
-  php8.2-fpm php8.2-mysql php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip \
-  php8.2-bcmath php8.2-intl php8.2-gd
+  php8.4-fpm php8.4-mysql php8.4-mbstring php8.4-xml php8.4-curl php8.4-zip \
+  php8.4-bcmath php8.4-intl php8.4-gd
 
 # Composer
 curl -sS https://getcomposer.org/installer | php
@@ -159,7 +159,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre>
 
     location ~ \.php$ {
         include fastcgi_params;
-        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         fastcgi_param DOCUMENT_ROOT $realpath_root;
         fastcgi_hide_header X-Powered-By;
@@ -214,7 +214,7 @@ sudo supervisorctl start laravel-queue:*</code></pre>
 
         <section id="shared">
             <h2>3. Shared hosting (cPanel)</h2>
-            <p>Shared hosting works if your plan provides PHP 8.2+, MySQL, cron and (ideally) a terminal.
+            <p>Shared hosting works if your plan provides PHP 8.4+, MySQL, cron and (ideally) a terminal.
                 It does <strong>not</strong> support long-running processes, so queues run from cron.</p>
 
             <h3>3.1 Build assets locally</h3>

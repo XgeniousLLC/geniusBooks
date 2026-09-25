@@ -109,6 +109,7 @@ const NAV_GROUPS: NavGroup[] = [
             { label: 'Expenses', href: '/portal/reports/expenses', roles: ['owner', 'accountant'], match: (p) => p === '/portal/reports/expenses' },
             { label: 'Receivables', href: '/portal/reports/receivables', roles: ['owner', 'accountant'], match: (p) => p === '/portal/reports/receivables' },
             { label: 'Tax Summary', href: '/portal/reports/tax-summary', roles: ['owner', 'accountant'], match: (p) => p === '/portal/reports/tax-summary' },
+            { label: 'General Ledger', href: '/portal/reports/general-ledger', roles: ['owner', 'accountant'], match: (p) => p.startsWith('/portal/reports/general-ledger') },
         ],
     },
     {

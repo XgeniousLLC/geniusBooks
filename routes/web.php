@@ -191,6 +191,7 @@ Route::prefix('portal')->name('portal.')->group(function () {
                 Route::get('/reports/expenses', [ReportController::class, 'expenses'])->name('reports.expenses');
                 Route::get('/reports/receivables', [ReportController::class, 'receivables'])->name('reports.receivables');
                 Route::get('/reports/tax-summary', [ReportController::class, 'taxSummary'])->name('reports.tax-summary');
+                Route::get('/reports/general-ledger', [ReportController::class, 'generalLedger'])->name('reports.general-ledger');
                 Route::get('/reports/customers/{customer}/statement', [ReportController::class, 'statement'])->name('reports.statement');
                 Route::post('/reports/customers/{customer}/statement/email', [ReportController::class, 'emailStatement'])->name('reports.statement.email');
 
@@ -208,6 +209,18 @@ Route::prefix('portal')->name('portal.')->group(function () {
                 Route::get('/settings/payments', [SettingsController::class, 'payments'])->name('settings.payments');
                 Route::patch('/settings/payments', [SettingsController::class, 'updatePayments'])->name('settings.payments.update');
                 Route::get('/settings/export', [SettingsController::class, 'export'])->name('settings.export');
+
+                // Developer — API applications
+                Route::get('/settings/api', [\App\Http\Controllers\Portal\ApiApplicationController::class, 'index'])->name('settings.api.index');
+                Route::post('/settings/api', [\App\Http\Controllers\Portal\ApiApplicationController::class, 'store'])->name('settings.api.store');
+                Route::delete('/settings/api/{apiApplication}', [\App\Http\Controllers\Portal\ApiApplicationController::class, 'destroy'])->name('settings.api.destroy');
+
+                // Integrations — finance SaaS two-way sync
+                Route::get('/settings/integrations', [\App\Http\Controllers\Portal\IntegrationController::class, 'index'])->name('settings.integrations.index');
+                Route::post('/settings/integrations', [\App\Http\Controllers\Portal\IntegrationController::class, 'store'])->name('settings.integrations.store');
+                Route::delete('/settings/integrations/{integration}', [\App\Http\Controllers\Portal\IntegrationController::class, 'destroy'])->name('settings.integrations.destroy');
+                Route::post('/settings/integrations/{integration}/sync', [\App\Http\Controllers\Portal\IntegrationController::class, 'sync'])->name('settings.integrations.sync');
+                Route::get('/settings/integrations/{integration}/logs', [\App\Http\Controllers\Portal\IntegrationController::class, 'logs'])->name('settings.integrations.logs');
 
                 // Global search
                 Route::get('/search', [SearchController::class, 'index'])->name('search');

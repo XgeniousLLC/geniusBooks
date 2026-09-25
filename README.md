@@ -39,8 +39,8 @@ gets an isolated workspace covering the full core workflow:
 
 ### Insight & admin
 - Dashboard KPIs, charts and widgets.
-- Reports: Profit & Loss, Income, Expenses, Receivables (aging), Tax Summary, and
-  customer statements — all with date ranges and CSV/PDF export.
+- Reports: Profit & Loss, Income, Expenses, Receivables (aging), Tax Summary,
+  General Ledger, and customer statements — all with date ranges and CSV/PDF export.
 - Settings: business, currency (symbol and position), invoice, tax, and email
   (templates + notification toggles); global search; tenant data export; account
   deletion; legal pages.
@@ -56,7 +56,7 @@ HTML documentation lives in [`docs/`](docs/index.html):
 
 ## Stack
 
-- **Backend**: Laravel 12 (PHP 8.2+), Eloquent, Form Requests, Policies
+- **Backend**: Laravel 13 (PHP 8.4+), Eloquent, Form Requests, Policies
 - **Portal UI**: React 19 + TypeScript + Inertia + Vite + Tailwind CSS 4
 - **Admin UI**: Laravel Blade + Alpine.js
 - **Database**: MySQL (production) / SQLite (local default)
@@ -85,7 +85,7 @@ docs/                                 # HTML guides + sprint tracker
 ## Installation & Setup
 
 ### Prerequisites
-- PHP 8.2+ with `mbstring`, `xml`, `curl`, `zip`, `bcmath`, `intl`, `gd`
+- PHP 8.4+ with `mbstring`, `xml`, `curl`, `zip`, `bcmath`, `intl`, `gd`
 - Composer 2 & Node.js 20+
 - SQLite (default) or MySQL
 

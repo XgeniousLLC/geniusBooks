@@ -10,7 +10,7 @@ APP_DIR="${APP_DIR:-/var/www/app}"
 DB_NAME="${DB_NAME:-app}"
 DB_USER="${DB_USER:-app}"
 DB_PASS="${DB_PASS:-$(openssl rand -hex 16)}"
-PHP_VER="8.2"
+PHP_VER="8.4"
 
 log() { echo -e "\n\033[1;32m[INSTALL]\033[0m $*"; }
 err() { echo -e "\033[1;31m[ERROR]\033[0m $*" >&2; exit 1; }

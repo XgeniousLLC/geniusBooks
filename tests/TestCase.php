@@ -4,7 +4,7 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -43,6 +43,6 @@ abstract class TestCase extends BaseTestCase
 
         // CSRF tokens are not used in HTTP tests; the public support and
         // guest reply endpoints are exercised by feature tests below.
-        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $this->withoutMiddleware(PreventRequestForgery::class);
     }
 }

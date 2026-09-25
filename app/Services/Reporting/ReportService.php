@@ -320,6 +320,96 @@ class ReportService
 
     // ── Building blocks ───────────────────────────────────────────────────────
 
+    /**
+     * General ledger for a bank/cash account or a chart-of-accounts ledger
+     * account: opening balance, dated movements with a running balance, and the
+     * closing balance.
+     *
+     * @return array<string, mixed>
+     */
+    public function generalLedger(Company $company, string $accountType, int $accountId, CarbonInterface $from, CarbonInterface $to): array
+    {
+        $currency = $company->currency;
+
+        if ($accountType === 'bank') {
+            $account = \App\Models\BankAccount::withoutCompanyScope()
+                ->where('company_id', $company->id)->find($accountId);
+            $opening = $account ? (int) $account->opening_balance : 0;
+            $movements = $account
+                ? Transaction::withoutCompanyScope()
+                    ->where('company_id', $company->id)
+                    ->where('bank_account_id', $account->id)
+                    ->orderBy('occurred_on')->orderBy('id')
+                    ->get()
+                : collect();
+            $accountName = $account?->name ?? 'Unknown account';
+        } else {
+            $account = \App\Models\LedgerAccount::withoutCompanyScope()
+                ->where('company_id', $company->id)->find($accountId);
+            $opening = 0;
+            $movements = $account
+                ? Transaction::withoutCompanyScope()
+                    ->where('company_id', $company->id)
+                    ->where('ledger_account_id', $account->id)
+                    ->orderBy('occurred_on')->orderBy('id')
+                    ->get()
+                : collect();
+            $accountName = $account?->name ?? 'Unknown account';
+        }
+
+        $start = Carbon::parse($from)->startOfDay();
+        $end = Carbon::parse($to)->endOfDay();
+
+        foreach ($movements as $movement) {
+            if ($movement->occurred_on->lessThan($start)) {
+                $opening += $movement->signedAmount();
+            }
+        }
+
+        $balance = $opening;
+        $rows = [];
+        $totalDebit = 0;
+        $totalCredit = 0;
+
+        foreach ($movements as $movement) {
+            $date = $movement->occurred_on;
+            if ($date->lessThan($start) || $date->greaterThan($end)) {
+                continue;
+            }
+
+            $signed = $movement->signedAmount();
+            $balance += $signed;
+
+            $debit = $signed >= 0 ? abs($signed) : 0;
+            $credit = $signed < 0 ? abs($signed) : 0;
+            $totalDebit += $debit;
+            $totalCredit += $credit;
+
+            $rows[] = [
+                'date' => $date->toDateString(),
+                'description' => $movement->description,
+                'type' => ucfirst($movement->type),
+                'debit_display' => $debit > 0 ? $this->format($debit, $currency) : '',
+                'credit_display' => $credit > 0 ? $this->format($credit, $currency) : '',
+                'balance_display' => $this->format($balance, $currency),
+            ];
+        }
+
+        return [
+            'title' => 'General Ledger — '.$accountName,
+            'period' => $this->period($from, $to),
+            'account_type' => $accountType,
+            'account_id' => $accountId,
+            'account_name' => $accountName,
+            'currency' => $currency,
+            'opening_display' => $this->format($opening, $currency),
+            'total_debit_display' => $this->format($totalDebit, $currency),
+            'total_credit_display' => $this->format($totalCredit, $currency),
+            'closing_display' => $this->format($balance, $currency),
+            'rows' => $rows,
+        ];
+    }
+
     private function invoices(Company $company, CarbonInterface $from, CarbonInterface $to): Collection
     {
         return Invoice::withoutCompanyScope()

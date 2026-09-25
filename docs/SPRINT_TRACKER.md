@@ -1480,13 +1480,15 @@ Explicitly out of MVP scope; recorded so scope stays controlled.
 - Bank statement import & reconciliation (CSV import into an account, auto-match to
   ledger transactions, manual match/unmatch, create a transaction from a line, and
   reconcile toggling).
+- General ledger (opening balance, dated movements, running balance, and closing
+  balance for a bank/cash account or chart account; CSV/PDF export).
 
 **Banking & reconciliation**
 - Live bank connections (open banking APIs).
 
 **Advanced accounting**
-- Double-entry journal UI, journal entries, general ledger, trial balance, balance
-  sheet, accounts payable, budgets, fixed assets, purchase orders.
+- Double-entry journal UI, journal entries, trial balance, balance sheet, accounts
+  payable, budgets, fixed assets, purchase orders.
 
 **Sales & expenses extensions**
 - Recurring payments, expense approvals, receipt OCR.

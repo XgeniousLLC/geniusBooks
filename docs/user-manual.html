@@ -26,10 +26,12 @@
             <li><a href="#reports">13. Reports</a></li>
             <li><a href="#settings">14. Settings</a></li>
             <li><a href="#team">15. Team &amp; invitations</a></li>
-            <li><a href="#search">16. Search</a></li>
-            <li><a href="#profile">17. Profile &amp; account</a></li>
-            <li><a href="#troubleshoot">18. Troubleshooting</a></li>
-            <li><a href="#glossary">19. Glossary</a></li>
+            <li><a href="#api">16. API &amp; developer access</a></li>
+            <li><a href="#integrations">17. Finance integrations</a></li>
+            <li><a href="#search">18. Search</a></li>
+            <li><a href="#profile">19. Profile &amp; account</a></li>
+            <li><a href="#troubleshoot">20. Troubleshooting</a></li>
+            <li><a href="#glossary">21. Glossary</a></li>
         </ol>
     </nav>
 
@@ -56,16 +58,16 @@
                 <a href="#team">Users &amp; Roles</a>.</p>
             <table>
                 <tr><th>Area</th><th>Owner</th><th>Accountant</th><th>Staff</th></tr>
-                <tr><td>Dashboard</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                <tr><td>Customers, Products</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                <tr><td>Invoices</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                <tr><td>Record payments</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                <tr><td>Void payment / issue credit note</td><td>✓</td><td>✓</td><td>—</td></tr>
-                <tr><td>Expenses &amp; Vendors</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                <tr><td>Accounts, Chart of accounts, Transactions</td><td>✓</td><td>✓</td><td>—</td></tr>
-                <tr><td>Reports &amp; statements</td><td>✓</td><td>✓</td><td>—</td></tr>
-                <tr><td>Settings (business, invoice, tax, email)</td><td>✓</td><td>—</td><td>—</td></tr>
-                <tr><td>Users &amp; Roles, data export</td><td>✓</td><td>—</td><td>—</td></tr>
+                <tr><td>Dashboard</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Customers, Products</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Invoices</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Record payments</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Void payment / issue credit note</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+                <tr><td>Expenses &amp; Vendors</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td>Accounts, Chart of accounts, Transactions</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+                <tr><td>Reports &amp; statements</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+                <tr><td>Settings (business, invoice, tax, email)</td><td>Yes</td><td>No</td><td>No</td></tr>
+                <tr><td>Users &amp; Roles, data export</td><td>Yes</td><td>No</td><td>No</td></tr>
             </table>
             <div class="note">
                 <strong>Good to know</strong> Menu items you do not have access to are hidden, and the
@@ -350,6 +352,8 @@
                 <li><strong>Receivables</strong> — outstanding and overdue invoices, aging buckets and
                     customer balances.</li>
                 <li><strong>Tax summary</strong> — tax collected, tax paid, taxable sales.</li>
+                <li><strong>General ledger</strong> — opening balance, dated movements, running
+                    balance, and closing balance for a selected bank/cash or chart account.</li>
                 <li><strong>Customer statement</strong> — from a customer profile; period statement
                     with opening/closing balance.</li>
             </ul>
@@ -406,15 +410,72 @@
             </div>
         </section>
 
+        <section id="api">
+            <h2>16. API &amp; developer access</h2>
+            <p><strong>Settings → API applications</strong> (owner only). Create Bearer tokens so external apps can read/write your accounting data via <code>/api/v1</code>.</p>
+            <h3>Create an application</h3>
+            <ol>
+                <li>Go to <strong>Settings → API applications</strong>.</li>
+                <li>Enter a name (e.g. <em>Zapier</em>, <em>My Mobile App</em>) and optional expiry date, click <strong>Create</strong>.</li>
+                <li>Copy the token immediately — it starts with <code>gb_</code> and is shown only once. Store it securely.</li>
+            </ol>
+            <div class="note"><strong>Scoped to your business.</strong> A token can only see the company it was created for, even if you try to guess another ID. Revoke deletes it instantly.</div>
+            <h3>Using the token</h3>
+            <pre><code>curl -H "Authorization: Bearer gb_your_token_here" https://app.example.com/api/v1/me
+curl -H "Authorization: Bearer gb_your_token_here" https://app.example.com/api/v1/customers
+curl -H "Authorization: Bearer gb_your_token_here" -H "Content-Type: application/json" \
+  -d '{"name":"Acme Corp","email":"acme@example.com"}' https://app.example.com/api/v1/customers</code></pre>
+            <p>Base URL <code>/api/v1</code>. Lists are paginated (<code>?page=1&amp;per_page=15</code>, max 100). See <a href="api-documentation.html">API documentation</a> for all endpoints, payloads and test cases (customers, products, quotes, invoices, payments, expenses, vendors, transactions).</p>
+            <h3>Managing tokens</h3>
+            <ul>
+                <li><strong>Last used</strong> updates on every request.</li>
+                <li><strong>Expires</strong> — expired tokens return 401.</li>
+                <li><strong>Revoke</strong> — deletes the hash; calls with that token immediately fail.</li>
+            </ul>
+        </section>
+
+        <section id="integrations">
+            <h2>17. Finance integrations — two-way sync</h2>
+            <p><strong>Settings → Integrations</strong> (owner only). Connect your business to one or more of the top 10 finance SaaS platforms and sync customers, invoices and payments both ways.</p>
+            <table>
+                <tr><th>#</th><th>Provider</th><th>What syncs</th></tr>
+                <tr><td>1</td><td>Xero</td><td>Customers, invoices, payments, contacts</td></tr>
+                <tr><td>2</td><td>QuickBooks Online</td><td>Customers, invoices, payments, accounts</td></tr>
+                <tr><td>3</td><td>FreshBooks</td><td>Clients, invoices, payments</td></tr>
+                <tr><td>4</td><td>HubSpot</td><td>Contacts, deals, invoices</td></tr>
+                <tr><td>5</td><td>Zoho Books</td><td>Contacts, invoices, bills</td></tr>
+                <tr><td>6</td><td>Wave</td><td>Customers, invoices, transactions</td></tr>
+                <tr><td>7</td><td>Sage Business Cloud</td><td>Customers, invoices, payments</td></tr>
+                <tr><td>8</td><td>Oracle NetSuite</td><td>Customers, invoices, journal entries</td></tr>
+                <tr><td>9</td><td>MYOB</td><td>Customers, invoices, payments</td></tr>
+                <tr><td>10</td><td>Kashoo</td><td>Customers, invoices, expenses</td></tr>
+            </table>
+            <h3>Connect a provider</h3>
+            <ol>
+                <li>Pick the provider from the dropdown.</li>
+                <li>Paste its <strong>access token / API key</strong> (and refresh token / org ID if the provider uses them). In production these are OAuth tokens — the form accepts the resulting access token.</li>
+                <li>Click <strong>Connect / Update</strong>. Status becomes <em>connected</em>. Click again to update the token after rotation.</li>
+            </ol>
+            <h3>Sync</h3>
+            <ul>
+                <li><strong>Push</strong> — send a local record to the provider (e.g. a customer you just created).</li>
+                <li><strong>Pull</strong> — fetch a remote record and create/update the local counterpart.</li>
+                <li>Every push/pull writes a row to <strong>Integration sync logs</strong> (direction, entity, status, message, payload). View via <em>View logs</em> or <code>GET /portal/settings/integrations/{id}/logs</code>.</li>
+                <li>Two-way sync is available from the portal and from the API once a provider is connected.</li>
+            </ul>
+            <div class="note"><strong>Company-isolated.</strong> An integration belongs to one business. Syncing customer #5 from company A cannot read company B's data — enforced by <code>company_id</code> on every model and verified by tests.</div>
+            <p>Full endpoint specs, provider API base URLs, payload mapping and test matrix are in <a href="api-documentation.html#integrations">API docs §12</a>.</p>
+        </section>
+
         <section id="search">
-            <h2>16. Search</h2>
+            <h2>18. Search</h2>
             <p>Use the search box in the header (or <code>/portal/search</code>) to find customers,
                 invoices, payments, expenses and transactions. Results are grouped by type and respect
                 your access level.</p>
         </section>
 
         <section id="profile">
-            <h2>17. Profile &amp; account</h2>
+            <h2>19. Profile &amp; account</h2>
             <p>Under <strong>Profile</strong> you can update your name/email and change your password.
                 The <strong>Danger zone</strong> lets you delete your account — this deactivates and
                 anonymises your login and removes your memberships. You must transfer ownership of any
@@ -422,7 +483,7 @@
         </section>
 
         <section id="troubleshoot">
-            <h2>18. Troubleshooting</h2>
+            <h2>20. Troubleshooting</h2>
             <h3>"These credentials do not match our records."</h3>
             <p>Check the email exactly, or use <em>Forgot password?</em>. If you are testing the demo,
                 the demo account only exists after seeding (<code>php artisan db:seed --class=DemoDataSeeder</code>).</p>
@@ -438,7 +499,7 @@
         </section>
 
         <section id="glossary">
-            <h2>19. Glossary</h2>
+            <h2>21. Glossary</h2>
             <table>
                 <tr><th>Term</th><th>Meaning</th></tr>
                 <tr><td>Workspace / Business</td><td>An isolated tenant with its own data.</td></tr>

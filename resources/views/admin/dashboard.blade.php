@@ -111,4 +111,68 @@
             </div>
         </x-admin.card>
     </div>
+
+    <!-- Xgenious Free Software Showcase -->
+    <div class="mt-8">
+        <x-admin.card>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                        More Free Software by Xgenious
+                    </h3>
+                    <p class="text-sm text-gray-500 mt-1">MIT-licensed, self-hosted — free forever. Explore our other products.</p>
+                </div>
+                <a href="https://xgenious.com/free-software" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 whitespace-nowrap">
+                    View all free software
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @foreach(config('xgenious.software', []) as $item)
+                    <a href="{{ $item['url'] }}" target="_blank" rel="noopener noreferrer" class="group block border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:bg-blue-50/50 transition-colors">
+                        <div class="flex items-start justify-between gap-3">
+                            <h4 class="text-sm font-semibold text-gray-900 group-hover:text-blue-700">{{ $item['name'] }}</h4>
+                            <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1.5 line-clamp-2">{{ $item['description'] }}</p>
+                        <span class="inline-flex items-center mt-3 text-xs font-medium text-blue-600 group-hover:text-blue-700">
+                            View details
+                            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </span>
+                    </a>
+                @endforeach
+            </div>
+        </x-admin.card>
+    </div>
+
+    <!-- Help & Support -->
+    <div class="mt-6">
+        <x-admin.card>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div class="flex-1">
+                    <h3 class="text-base font-semibold text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        Need help or found a bug?
+                    </h3>
+                    <p class="text-sm text-gray-500 mt-1">Contact the Xgenious team — we typically respond within one business day (Sun–Thu).</p>
+                    <div class="flex flex-wrap items-center gap-3 mt-4">
+                        <a href="{{ config('xgenious.contact_url') }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
+                            Contact / Report a Bug
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                        <a href="mailto:{{ config('xgenious.contact_email') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            {{ config('xgenious.contact_email') }}
+                        </a>
+                        <a href="https://xgenious.com/free-software" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-500 hover:text-gray-700">xgenious.com</a>
+                    </div>
+                </div>
+                <div class="hidden md:block text-gray-300">
+                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </div>
+            </div>
+        </x-admin.card>
+    </div>
 @endsection
