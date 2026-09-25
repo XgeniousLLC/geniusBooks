@@ -176,9 +176,11 @@
             </form>
 
             {{-- Demo credentials --}}
-            <div class="mt-6 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-                <p class="text-xs font-semibold text-amber-700 mb-1">Demo credentials</p>
+            <div class="mt-6 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 space-y-1">
+                <p class="text-xs font-semibold text-amber-700 mb-1">Demo credentials (platform admin)</p>
                 <p class="text-xs text-amber-600 font-mono">admin@example.com / password</p>
+                <p class="text-xs text-amber-600 font-mono">demo@admin.com / password</p>
+                <p class="text-[11px] text-amber-700/80 mt-2">Accounting portal (business users) is a separate login.</p>
             </div>
 
             <p class="mt-6 text-center text-xs text-gray-400">

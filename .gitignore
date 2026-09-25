@@ -23,3 +23,10 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /.commandcode
+
+# Local database dumps and release archives
+/geniusBooks-*.sqlite
+/geniusBooks-*.sql
+/genius_books-*.sql
+geniusbook.zip
+*.zip

@@ -198,36 +198,38 @@ class DemoDataSeeder extends Seeder
      */
     private function seedNova(User $owner, User $accountant, User $staff): void
     {
-        if (Company::where('name', 'Nova Retail Ltd')->exists()) {
-            return;
-        }
+        $company = Company::firstOrCreate(
+            ['name' => 'Nova Retail Ltd'],
+            [
+                'email' => 'accounts@novaretail.test',
+                'phone' => '+44 20 7946 0000',
+                'address' => '42 Commerce Road, London',
+                'country' => 'GB',
+                'currency' => 'USD',
+                'timezone' => 'Europe/London',
+                'financial_year_start_month' => 1,
+                'financial_year_start_day' => 1,
+                'tax_registration_number' => 'GB-123456789',
+                'tax_inclusive' => false,
+                'default_tax_rate' => 10,
+                'invoice_prefix' => 'NOVA-',
+                'invoice_number_padding' => 5,
+                'default_payment_terms_days' => 30,
+                'payment_instructions' => "Bank: Nova Business\nAccount: 99887766\nSort code: 00-00-00",
+                'invoice_footer' => 'Nova Retail Ltd · Registered in England & Wales',
+                'default_invoice_terms' => 'Payment due within 30 days.',
+                'email_from_name' => 'Nova Retail',
+                'email_reply_to' => 'accounts@novaretail.test',
+                'onboarded_at' => now(),
+            ],
+        );
 
-        $company = Company::create([
-            'name' => 'Nova Retail Ltd',
-            'email' => 'accounts@novaretail.test',
-            'phone' => '+44 20 7946 0000',
-            'address' => '42 Commerce Road, London',
-            'country' => 'GB',
-            'currency' => 'USD',
-            'timezone' => 'Europe/London',
-            'financial_year_start_month' => 1,
-            'financial_year_start_day' => 1,
-            'tax_registration_number' => 'GB-123456789',
-            'tax_inclusive' => false,
-            'default_tax_rate' => 10,
-            'invoice_prefix' => 'NOVA-',
-            'invoice_number_padding' => 5,
-            'default_payment_terms_days' => 30,
-            'payment_instructions' => "Bank: Nova Business\nAccount: 99887766\nSort code: 00-00-00",
-            'invoice_footer' => 'Nova Retail Ltd · Registered in England & Wales',
-            'default_invoice_terms' => 'Payment due within 30 days.',
-            'email_from_name' => 'Nova Retail',
-            'email_reply_to' => 'accounts@novaretail.test',
-            'onboarded_at' => now(),
-        ]);
-
+        // Always (re)link the current demo members — covers the case where the
+        // database was imported from another environment and re-seeded.
         foreach ([$owner, $accountant, $staff] as $member) {
-            $company->users()->attach($member->id, ['is_active' => true]);
+            if (! $company->users()->whereKey($member->id)->exists()) {
+                $company->users()->attach($member->id, ['is_active' => true]);
+            }
         }
 
         $this->provisioning->ensureRoles($company);
@@ -238,6 +240,12 @@ class DemoDataSeeder extends Seeder
         $this->provisioning->assignRole($company, $owner, 'owner');
         $this->provisioning->assignRole($company, $accountant, 'accountant');
         $this->provisioning->assignRole($company, $staff, 'staff');
+
+        // The demo data itself is created once; the members above are re-linked
+        // on every run so the configured demo account always has access.
+        if (Invoice::withoutCompanyScope()->where('company_id', $company->id)->exists()) {
+            return;
+        }
 
         app(CompanyContext::class)->set($company->id);
 

@@ -22,13 +22,13 @@ class AdminSeeder extends Seeder
             ]
         );
 
-        // Create additional test admin
+        // Create additional demo admin (same password as the primary admin).
         Admin::updateOrCreate(
             ['email' => 'demo@admin.com'],
             [
                 'name' => 'Demo Admin',
                 'email' => 'demo@admin.com',
-                'password' => Hash::make('demo123'),
+                'password' => Hash::make('password'),
                 'is_active' => true,
                 'role' => 'admin',
                 'email_verified_at' => now(),

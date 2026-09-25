@@ -138,6 +138,12 @@ export default function Login() {
                         Create one free
                     </Link>
                 </p>
+                <p className="text-xs text-gray-400">
+                    Platform admin?{' '}
+                    <a href="/admin/login" className="text-indigo-600 hover:underline font-medium">
+                        Sign in at /admin/login
+                    </a>
+                </p>
             </div>
 
             {/* Demo credentials hint */}
